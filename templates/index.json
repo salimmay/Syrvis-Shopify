@@ -1,0 +1,248 @@
+{
+  "sections": {
+    "hero": {
+      "type": "hero",
+      "blocks": {
+        "tile-1": {
+          "type": "tile",
+          "settings": {
+            "heading": "Smart Home",
+            "text": "Hubs, lights, cameras, plugs",
+            "link_label": "Shop Smart Home",
+            "background": "#eef1ff",
+            "text_color": "#1d1d1f"
+          }
+        },
+        "tile-2": {
+          "type": "tile",
+          "settings": {
+            "heading": "Desk Setup",
+            "text": "Lamps, stands, cable control",
+            "link_label": "Shop Desk",
+            "background": "#f3f1ec",
+            "text_color": "#1d1d1f"
+          }
+        },
+        "tile-3": {
+          "type": "tile",
+          "settings": {
+            "heading": "Phone",
+            "text": "Chargers & mounts",
+            "link_label": "Shop",
+            "background": "#eaf6f1",
+            "text_color": "#1d1d1f"
+          }
+        },
+        "tile-4": {
+          "type": "tile",
+          "settings": {
+            "kicker": "This week",
+            "big_text": "−25%",
+            "heading": "",
+            "text": "",
+            "link_label": "Security cams",
+            "background": "#1d1d1f",
+            "text_color": "#ffffff",
+            "link_color": "#9fb3ff"
+          }
+        }
+      },
+      "block_order": [
+        "tile-1",
+        "tile-2",
+        "tile-3",
+        "tile-4"
+      ],
+      "settings": {
+        "layout": "split",
+        "eyebrow": "Smart home · Desk · Phone",
+        "heading": "Tech that fits your space.",
+        "text": "Curated gadgets that make your home, desk and phone work better — without the clutter.",
+        "button_label": "Shop best sellers",
+        "button2_label": "See today's deals",
+        "trust": "Free shipping to US & EU over $49 | 30-day returns | Secure checkout"
+      }
+    },
+    "categories": {
+      "type": "collection-list",
+      "blocks": {
+        "c1": {
+          "type": "collection",
+          "settings": {
+            "title": "Smart Home",
+            "subtitle": "Hubs, speakers, plugs"
+          }
+        },
+        "c2": {
+          "type": "collection",
+          "settings": {
+            "title": "Desk Setup",
+            "subtitle": "Lamps, stands, cable control"
+          }
+        },
+        "c3": {
+          "type": "collection",
+          "settings": {
+            "title": "Phone & Accessories",
+            "subtitle": "Chargers, mounts, cases"
+          }
+        },
+        "c4": {
+          "type": "collection",
+          "settings": {
+            "title": "Smart Lighting",
+            "subtitle": "Bulbs, strips, scenes"
+          }
+        },
+        "c5": {
+          "type": "collection",
+          "settings": {
+            "title": "Security",
+            "subtitle": "Cameras, doorbells, sensors"
+          }
+        }
+      },
+      "block_order": [
+        "c1",
+        "c2",
+        "c3",
+        "c4",
+        "c5"
+      ],
+      "settings": {
+        "heading": "Shop by space",
+        "columns": 3,
+        "columns_mobile": "1.2"
+      }
+    },
+    "best-sellers": {
+      "type": "featured-collection",
+      "settings": {
+        "eyebrow": "Loved by customers",
+        "heading": "Best sellers",
+        "limit": 8,
+        "columns": 4,
+        "show_view_all": true,
+        "mobile_scroll": true
+      }
+    },
+    "features": {
+      "type": "feature-grid",
+      "blocks": {
+        "f1": {
+          "type": "feature",
+          "settings": {
+            "icon": "truck",
+            "title": "Free shipping",
+            "text": "On US & EU orders over $49, tracked to your door."
+          }
+        },
+        "f2": {
+          "type": "feature",
+          "settings": {
+            "icon": "return",
+            "title": "30-day returns",
+            "text": "Changed your mind? Send it back, no questions."
+          }
+        },
+        "f3": {
+          "type": "feature",
+          "settings": {
+            "icon": "shield",
+            "title": "1-year warranty",
+            "text": "Every gadget is covered if something goes wrong."
+          }
+        },
+        "f4": {
+          "type": "feature",
+          "settings": {
+            "icon": "chat",
+            "title": "Real support",
+            "text": "A real person replies within 24 hours."
+          }
+        }
+      },
+      "block_order": [
+        "f1",
+        "f2",
+        "f3",
+        "f4"
+      ],
+      "settings": {
+        "heading": "Why SmartKove"
+      }
+    },
+    "desk-story": {
+      "type": "image-with-text",
+      "settings": {
+        "eyebrow": "Desk Setup",
+        "heading": "A desk that works as hard as you do.",
+        "text": "<p>Lamps, stands and cable control that turn any corner into a focused, clutter-free workspace.</p>",
+        "button_label": "Shop Desk Setup",
+        "image_right": false
+      }
+    },
+    "new-arrivals": {
+      "type": "featured-collection",
+      "settings": {
+        "eyebrow": "Just landed",
+        "heading": "New arrivals",
+        "limit": 4,
+        "columns": 4,
+        "show_view_all": true,
+        "mobile_scroll": true
+      }
+    },
+    "faq": {
+      "type": "faq",
+      "blocks": {
+        "q1": {
+          "type": "question",
+          "settings": {
+            "question": "How long does shipping take?",
+            "answer": "<p>Most orders arrive in 7–12 business days to the US and Europe. You'll get a tracking link as soon as your order ships.</p>"
+          }
+        },
+        "q2": {
+          "type": "question",
+          "settings": {
+            "question": "Can I return a product?",
+            "answer": "<p>Yes — you have 30 days from delivery to return any item in its original condition.</p>"
+          }
+        },
+        "q3": {
+          "type": "question",
+          "settings": {
+            "question": "Will it work with my phone or smart home system?",
+            "answer": "<p>Each product page lists compatibility in the specs table. Not sure? Message us before you buy.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "q1",
+        "q2",
+        "q3"
+      ],
+      "settings": {
+        "heading": "Questions, answered"
+      }
+    },
+    "newsletter": {
+      "type": "newsletter",
+      "settings": {
+        "heading": "Get 10% off your first order",
+        "text": "New gadgets, setup ideas and member-only deals. No spam."
+      }
+    }
+  },
+  "order": [
+    "hero",
+    "categories",
+    "best-sellers",
+    "features",
+    "desk-story",
+    "new-arrivals",
+    "faq",
+    "newsletter"
+  ]
+}

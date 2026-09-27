@@ -1,0 +1,50 @@
+<div data-predictive-content>
+  {%- if predictive_search.performed -%}
+    {%- assign res = predictive_search.resources -%}
+    {%- if res.products.size > 0 or res.collections.size > 0 or res.queries.size > 0 -%}
+      {%- if res.queries.size > 0 -%}
+        <div class="predictive-links" style="padding-top: 12px">
+          {%- for q in res.queries -%}
+            <a class="chip" href="{{ q.url }}">{{ q.styled_text }}</a>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+      {%- if res.products.size > 0 -%}
+        <p class="predictive-heading">{{ 'search.products' | t }}</p>
+        {%- for product in res.products -%}
+          <a class="predictive-item" href="{{ product.url }}" role="option" aria-selected="false">
+            <div class="media" style="--ratio: 1">
+              {%- if product.featured_media -%}
+                {{ product.featured_media | image_url: width: 120 | image_tag: loading: 'lazy', alt: '' }}
+              {%- endif -%}
+            </div>
+            <span class="small" style="font-weight: 560">{{ product.title }}</span>
+            {% render 'price', product: product %}
+          </a>
+        {%- endfor -%}
+      {%- endif -%}
+      {%- if res.collections.size > 0 -%}
+        <p class="predictive-heading">{{ 'search.collections' | t }}</p>
+        <div class="predictive-links">
+          {%- for collection in res.collections -%}
+            <a class="chip" href="{{ collection.url }}">{{ collection.title }}</a>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+      <div style="padding: 8px">
+        <a class="btn btn--secondary btn--block" href="{{ routes.search_url }}?q={{ predictive_search.terms | url_encode }}&options%5Bprefix%5D=last">
+          {{ 'search.view_all' | t: terms: predictive_search.terms }}
+        </a>
+      </div>
+    {%- else -%}
+      <p class="predictive-empty">{{ 'search.no_results' | t: terms: predictive_search.terms }}</p>
+    {%- endif -%}
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Predictive search",
+  "settings": []
+}
+{% endschema %}

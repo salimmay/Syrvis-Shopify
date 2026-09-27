@@ -1,0 +1,16 @@
+<div class="page-width auth">
+  <div class="auth__card">
+    <h1 class="h2">{{ 'customer.activate.title' | t }}</h1>
+    {%- form 'activate_customer_password', class: 'form-grid' -%}
+      {%- if form.errors -%}<div class="form-status form-status--error">{{ form.errors | default_errors }}</div>{%- endif -%}
+      <div class="field"><label for="ActPassword">{{ 'customer.password' | t }}</label><input class="input" id="ActPassword" type="password" name="customer[password]" autocomplete="new-password" required></div>
+      <div class="field"><label for="ActConfirm">{{ 'customer.password_confirm' | t }}</label><input class="input" id="ActConfirm" type="password" name="customer[password_confirmation]" autocomplete="new-password" required></div>
+      <button type="submit" class="btn btn--primary btn--block">{{ 'customer.activate.submit' | t }}</button>
+      <button type="submit" class="btn btn--ghost btn--block" name="decline">{{ 'customer.activate.decline' | t }}</button>
+    {%- endform -%}
+  </div>
+</div>
+
+{% schema %}
+{ "name": "Activate account", "settings": [] }
+{% endschema %}

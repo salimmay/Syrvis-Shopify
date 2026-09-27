@@ -1,0 +1,106 @@
+{%- liquid
+  assign socials = 'instagram,tiktok,pinterest,youtube,facebook' | split: ','
+-%}
+<footer class="site-footer">
+  <div class="page-width">
+    <div class="footer__grid">
+      <div class="footer__brand">
+        <a class="logo" href="{{ routes.root_url }}"><span class="logo-mark" aria-hidden="true"></span>{{ shop.name }}</a>
+        {%- if section.settings.tagline != blank -%}
+          <p>{{ section.settings.tagline }}</p>
+        {%- endif -%}
+        <ul class="socials" role="list">
+          {%- for s in socials -%}
+            {%- assign key = 'social_' | append: s -%}
+            {%- if settings[key] != blank -%}
+              <li><a href="{{ settings[key] }}" target="_blank" rel="noopener" aria-label="{{ s | capitalize }}">{% render 'icon', name: s %}</a></li>
+            {%- endif -%}
+          {%- endfor -%}
+        </ul>
+      </div>
+
+      {%- for block in section.blocks -%}
+        <div class="footer__col" {{ block.shopify_attributes }}>
+          {%- case block.type -%}
+            {%- when 'menu' -%}
+              <h2>{{ block.settings.heading | default: block.settings.menu.title }}</h2>
+              <ul role="list">
+                {%- for link in block.settings.menu.links -%}
+                  <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+                {%- endfor -%}
+              </ul>
+            {%- when 'text' -%}
+              <h2>{{ block.settings.heading }}</h2>
+              <div class="rte muted">{{ block.settings.text }}</div>
+          {%- endcase -%}
+        </div>
+      {%- endfor -%}
+    </div>
+
+    <div class="footer__bottom">
+      <span>&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}. {{ powered_by_link }}</span>
+
+      {%- if section.settings.show_localization -%}
+        {%- form 'localization', class: 'localization' -%}
+          {%- if localization.available_countries.size > 1 -%}
+            <label class="visually-hidden" for="FooterCountry">{{ 'localization.country' | t }}</label>
+            <select class="select" id="FooterCountry" name="country_code" data-localization-select>
+              {%- for country in localization.available_countries -%}
+                <option value="{{ country.iso_code }}"{% if country.iso_code == localization.country.iso_code %} selected{% endif %}>
+                  {{ country.name }} ({{ country.currency.iso_code }} {{ country.currency.symbol }})
+                </option>
+              {%- endfor -%}
+            </select>
+          {%- endif -%}
+          {%- if localization.available_languages.size > 1 -%}
+            <label class="visually-hidden" for="FooterLanguage">{{ 'localization.language' | t }}</label>
+            <select class="select" id="FooterLanguage" name="locale_code" data-localization-select>
+              {%- for language in localization.available_languages -%}
+                <option value="{{ language.iso_code }}"{% if language.iso_code == localization.language.iso_code %} selected{% endif %}>{{ language.endonym_name | capitalize }}</option>
+              {%- endfor -%}
+            </select>
+          {%- endif -%}
+        {%- endform -%}
+      {%- endif -%}
+
+      {%- if section.settings.show_payment_icons -%}
+        <ul class="payment-icons" role="list">
+          {%- for type in shop.enabled_payment_types -%}
+            <li>{{ type | payment_type_svg_tag }}</li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+    </div>
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "Footer",
+  "max_blocks": 4,
+  "settings": [
+    { "type": "text", "id": "tagline", "label": "Tagline", "default": "Smart home, desk and phone gear that just works. Shipped to the US & Europe." },
+    { "type": "checkbox", "id": "show_localization", "label": "Show country / language selector", "default": true },
+    { "type": "checkbox", "id": "show_payment_icons", "label": "Show payment icons", "default": true }
+  ],
+  "blocks": [
+    {
+      "type": "menu",
+      "name": "Menu",
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Heading" },
+        { "type": "link_list", "id": "menu", "label": "Menu", "default": "footer" }
+      ]
+    },
+    {
+      "type": "text",
+      "name": "Text",
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Heading", "default": "Help" },
+        { "type": "richtext", "id": "text", "label": "Text", "default": "<p>Questions? Email us and a real person replies within 24 hours.</p>" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Footer" }]
+}
+{% endschema %}

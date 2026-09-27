@@ -1,0 +1,42 @@
+{% layout none %}
+{%- assign gc_initial = gift_card.initial_value | money -%}
+{%- assign gc_balance = gift_card.balance | money -%}
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ 'gift_card.title' | t: value: gc_initial }} &ndash; {{ shop.name }}</title>
+    {{ 'base.css' | asset_url | stylesheet_tag }}
+    {% render 'theme-styles' %}
+    <script src="{{ 'vendor/qrcode.js' | shopify_asset_url }}" defer></script>
+    {{ content_for_header }}
+  </head>
+  <body>
+    <main class="page-width auth">
+      <div class="auth__card" style="text-align:center;justify-items:center">
+        <span class="logo"><span class="logo-mark" aria-hidden="true"></span>{{ shop.name }}</span>
+        <p class="display" style="font-size:3rem">{{ gift_card.initial_value | money }}</p>
+        {%- if gift_card.balance != gift_card.initial_value -%}
+          <p class="muted">{{ 'gift_card.balance' | t: value: gc_balance }}</p>
+        {%- endif -%}
+        {%- if gift_card.expired or gift_card.enabled == false -%}
+          <span class="badge badge--muted">{{ 'gift_card.expired' | t }}</span>
+        {%- endif -%}
+        <p class="muted small">{{ 'gift_card.code' | t }}</p>
+        <p class="h3" style="letter-spacing:.08em">{{ gift_card.code | format_code }}</p>
+        <div id="QrCode" data-identifier="{{ gift_card.qr_identifier }}"></div>
+        <a class="btn btn--primary" href="{{ shop.url }}">{{ 'gift_card.shop' | t }}</a>
+        {%- if gift_card.pass_url -%}
+          <a href="{{ gift_card.pass_url }}"><img src="{{ 'gift-card/add-to-apple-wallet.svg' | shopify_asset_url }}" width="120" height="40" alt="Add to Apple Wallet" loading="lazy"></a>
+        {%- endif -%}
+      </div>
+    </main>
+    <script>
+      window.addEventListener('load', function () {
+        var el = document.getElementById('QrCode');
+        if (window.QRCode && el) new QRCode(el, { text: el.dataset.identifier, width: 120, height: 120 });
+      });
+    </script>
+  </body>
+</html>

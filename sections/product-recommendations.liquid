@@ -1,0 +1,48 @@
+<section class="section" data-recommendations data-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ product.id }}&limit={{ section.settings.limit }}&intent={{ section.settings.intent }}">
+  {%- if recommendations.performed and recommendations.products_count > 0 -%}
+    <div class="page-width">
+      <div class="section-head"><h2 class="h2">{{ section.settings.heading }}</h2></div>
+      <ul class="product-grid" role="list" style="--cols: 4">
+        {%- for rec in recommendations.products -%}
+          <li>{% render 'product-card', product: rec, index: forloop.index0 %}</li>
+        {%- endfor -%}
+      </ul>
+    </div>
+  {%- else -%}
+    <div class="page-width" aria-hidden="true">
+      <div class="section-head"><div class="skeleton skeleton-line" style="width: 220px; height: 1.6em"></div></div>
+      <ul class="product-grid" role="list" style="--cols: 4">
+        {%- for i in (1..section.settings.limit) -%}
+          <li class="skeleton-card"><div class="skeleton skeleton-media"></div><div class="skeleton skeleton-line" style="width:70%"></div><div class="skeleton skeleton-line" style="width:35%"></div></li>
+        {%- endfor -%}
+      </ul>
+    </div>
+  {%- endif -%}
+</section>
+
+<script>
+  (() => {
+    const el = document.currentScript.previousElementSibling;
+    if (!el || !el.querySelector('.skeleton-card')) return;
+    const load = () => fetch(el.dataset.url).then((r) => r.text()).then((html) => {
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      const next = doc.querySelector('[data-recommendations]');
+      if (next && next.querySelector('.card')) { el.innerHTML = next.innerHTML; window.SK?.ImageLoad?.scan(el); } else { el.innerHTML = ''; }
+    }).catch(() => { el.innerHTML = ''; });
+    if (!('IntersectionObserver' in window)) return load();
+    const io = new IntersectionObserver((entries) => { if (entries[0].isIntersecting) { io.disconnect(); load(); } }, { rootMargin: '0px 0px 400px 0px' });
+    io.observe(el);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Product recommendations",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "You may also like" },
+    { "type": "range", "id": "limit", "label": "Products", "min": 2, "max": 8, "step": 1, "default": 4 },
+    { "type": "select", "id": "intent", "label": "Type", "options": [ { "value": "related", "label": "Related" }, { "value": "complementary", "label": "Complementary (bought together)" } ], "default": "related" }
+  ],
+  "presets": [{ "name": "Product recommendations" }]
+}
+{% endschema %}

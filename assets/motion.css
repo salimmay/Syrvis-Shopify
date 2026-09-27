@@ -1,0 +1,210 @@
+/* ==========================================================================
+   SmartKove — motion.css
+   Hover, gallery zoom & slides, sliders, page transitions, loader, skeletons.
+   Rules (Emil Kowalski / Apple): transform + opacity only, ease-out for
+   enter/exit, frequent actions stay fast or instant, hover only on fine
+   pointers, reduced motion = gentle fades instead of movement.
+   ========================================================================== */
+
+/* ---------- 1. Hover: product card image scrub ----------
+   Pointer position picks the image (like flipping through photos).
+   Seen tens of times per visit → 150ms crossfade, no movement. */
+.card__media[data-card-scrub] img { transition: opacity 150ms ease, transform 400ms var(--ease-out); }
+.card__media[data-card-scrub] img + img { opacity: 0; }
+.card__media[data-card-scrub] img:not([data-active]) { opacity: 0; }
+.card__media[data-card-scrub] img[data-active] { opacity: 1; }
+.card__dots {
+  position: absolute; left: 12px; right: 12px; bottom: 10px; z-index: 1;
+  display: flex; gap: 4px; opacity: 0; transition: opacity 150ms ease;
+  pointer-events: none;
+}
+.card__dots span { flex: 1; height: 2px; border-radius: 2px; background: rgba(0, 0, 0, 0.14); transition: background-color 150ms ease; }
+.card__dots span.is-active { background: var(--ink); }
+@media (hover: hover) and (pointer: fine) {
+  .card:hover .card__dots { opacity: 1; }
+  /* Scrubbing replaces the zoom so the two effects don't fight */
+  .card:hover .card__media[data-card-scrub] img:first-child { transform: none; }
+  .card:hover .card__media[data-card-scrub].is-first img[data-active] { transform: scale(1.04); }
+}
+
+/* Collection tile arrow nudges toward where it takes you */
+.collection-tile__arrow { display: inline-grid; color: var(--muted); transition: transform 200ms var(--ease-out), color 150ms ease; }
+@media (hover: hover) and (pointer: fine) {
+  .collection-tile:hover .collection-tile__arrow { transform: translateX(4px); color: var(--ink); }
+  .link-arrow { display: inline-block; transition: transform 200ms var(--ease-out); }
+}
+
+/* ---------- 2. Product gallery: slides, arrows, hover zoom ---------- */
+.gallery__main { position: relative; min-width: 0; }
+.gallery__track { scroll-behavior: smooth; }
+.gallery__track:focus-visible { outline-offset: -3px; }
+.gallery__zoom { display: block; width: 100%; padding: 0; border: 0; background: transparent; cursor: zoom-in; border-radius: 0; }
+.gallery__zoom img { transform-origin: var(--zoom-x, 50%) var(--zoom-y, 50%); transition: transform 300ms var(--ease-out); will-change: transform; }
+/* Hover zoom: scale to 2× around the cursor. The origin follows the pointer
+   1:1 (no transition on origin), the scale eases in/out. */
+@media (hover: hover) and (pointer: fine) {
+  .gallery__zoom.is-zoomed img { transform: scale(2); transition-duration: 350ms; }
+  .gallery__zoom.is-zoomed { cursor: zoom-out; }
+}
+
+.gallery__arrow {
+  position: absolute; top: 50%; z-index: 2;
+  width: 44px; height: 44px; margin-top: -22px; border: 0; border-radius: 50%;
+  display: grid; place-items: center;
+  background: color-mix(in srgb, var(--surface) 86%, transparent);
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-card); color: var(--ink);
+  opacity: 0; transition: opacity 200ms var(--ease-out), transform 160ms var(--ease-out);
+}
+.gallery__arrow svg { width: 18px; height: 18px; }
+.gallery__arrow--prev { left: 14px; }
+.gallery__arrow--next { right: 14px; }
+.gallery__arrow:active { transform: scale(0.94); }
+.gallery__arrow:disabled { opacity: 0 !important; pointer-events: none; }
+.gallery__main:hover .gallery__arrow, .gallery__arrow:focus-visible { opacity: 1; }
+@media (hover: none) { .gallery__main .gallery__arrow { display: none; } }
+
+.gallery__counter {
+  position: absolute; right: 14px; bottom: 14px; z-index: 2;
+  padding: 4px 10px; border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--surface) 86%, transparent);
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  font-size: 0.75rem; font-weight: 600; font-variant-numeric: tabular-nums;
+}
+@media (min-width: 901px) { .gallery__counter { display: none; } }
+
+/* ---------- 3. Lightbox ---------- */
+.lightbox {
+  width: 100vw; height: 100dvh; max-width: none; max-height: none;
+  margin: 0; padding: 0; border: 0; overflow: hidden;
+  background: var(--bg); color: var(--ink);
+}
+.lightbox::backdrop { background: var(--bg); }
+.lightbox[open] { animation: lightbox-in 250ms var(--ease-out); }
+@keyframes lightbox-in { from { opacity: 0; transform: scale(0.97); } }
+.lightbox.is-closing { opacity: 0; transform: scale(0.98); transition: opacity 180ms var(--ease-out), transform 180ms var(--ease-out); }
+.lightbox__track {
+  display: grid; grid-auto-flow: column; grid-auto-columns: 100%;
+  height: 100%; overflow-x: auto; overflow-y: hidden;
+  scroll-snap-type: x mandatory; scroll-behavior: smooth; overscroll-behavior: contain;
+  scrollbar-width: none;
+}
+.lightbox__track::-webkit-scrollbar { display: none; }
+.lightbox.is-zoomed .lightbox__track { overflow: hidden; }
+.lightbox__slide { margin: 0; scroll-snap-align: center; scroll-snap-stop: always; display: grid; place-items: center; overflow: hidden; }
+.lightbox__img { width: 100%; height: 100%; display: grid; place-items: center; cursor: zoom-in; touch-action: pan-x pan-y; }
+.lightbox__img img {
+  max-width: min(100%, 1400px); max-height: calc(100dvh - 120px); width: auto; height: auto; object-fit: contain;
+  transform: translate(var(--pan-x, 0px), var(--pan-y, 0px)) scale(var(--scale, 1));
+  transition: transform 300ms var(--ease-out);
+  user-select: none; -webkit-user-select: none; -webkit-user-drag: none;
+}
+.lightbox__img.is-zoomed { cursor: grab; touch-action: none; }
+.lightbox__img.is-dragging { cursor: grabbing; }
+.lightbox__img.is-dragging img { transition: none; }
+.lightbox__bar { position: absolute; top: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; padding: max(12px, env(safe-area-inset-top)) 16px 12px 24px; z-index: 3; }
+.lightbox__count { font-size: 0.875rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.lightbox__close { background: var(--surface); box-shadow: var(--shadow-card); }
+.lightbox .gallery__arrow { opacity: 1; }
+.lightbox__hint { position: absolute; bottom: max(16px, env(safe-area-inset-bottom)); left: 0; right: 0; text-align: center; font-size: 0.8125rem; color: var(--muted); pointer-events: none; }
+@media (hover: none) { .lightbox .gallery__arrow { display: none; } }
+
+/* ---------- 4. Slider (Shop by space and friends) ---------- */
+.slider { --gap: 16px; }
+.slider__track {
+  display: grid; grid-auto-flow: column;
+  grid-auto-columns: calc((100% - (var(--per-view) - 1) * var(--gap)) / var(--per-view));
+  gap: var(--gap);
+  overflow-x: auto; overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory; scroll-behavior: smooth;
+  scrollbar-width: none; list-style: none; margin: 0; padding: 4px 0 8px;
+}
+.slider__track::-webkit-scrollbar { display: none; }
+.slider__item { scroll-snap-align: start; min-width: 0; }
+.slider__controls { display: flex; gap: 8px; }
+.slider:not([data-overflow]) .slider__controls { display: none; }
+.slider__btn {
+  width: 40px; height: 40px; border-radius: 50%; border: 0;
+  display: grid; place-items: center; background: var(--surface); color: var(--ink);
+  box-shadow: 0 0 0 1px var(--hairline-strong) inset;
+  transition: transform 160ms var(--ease-out), opacity 150ms ease, box-shadow 150ms ease;
+}
+.slider__btn svg { width: 18px; height: 18px; }
+.slider__btn:active:not(:disabled) { transform: scale(0.94); }
+.slider__btn:disabled { opacity: 0.35; cursor: default; }
+@media (hover: hover) and (pointer: fine) { .slider__btn:hover:not(:disabled) { box-shadow: 0 0 0 1px var(--ink) inset; } }
+/* Scroll progress: a transform, so it never triggers layout */
+.slider__progress { height: 3px; margin-top: 18px; border-radius: 3px; background: var(--surface-2); overflow: hidden; }
+.slider:not([data-overflow]) .slider__progress { display: none; }
+.slider__progress span { display: block; height: 100%; width: var(--thumb, 33%); border-radius: inherit; background: var(--ink); transform: translateX(var(--offset, 0%)); }
+@media (max-width: 749px) {
+  .slider__track { grid-auto-columns: calc((100% - (var(--per-view-mobile, 1.2) - 1) * var(--gap)) / var(--per-view-mobile, 1.2)); margin-inline: calc(var(--gutter) * -1); padding-inline: var(--gutter); scroll-padding-inline: var(--gutter); }
+  .slider__controls { display: none !important; }
+}
+
+/* ---------- 5. Page transitions (View Transitions API) ----------
+   Chrome/Edge 126+, Safari 18.2+. Other browsers navigate normally.
+   Page changes happen often → short crossfade; header stays put; the
+   product image morphs from the card into the product page. */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; }
+}
+.site-header { view-transition-name: site-header; }
+.announcement { view-transition-name: announcement; }
+::view-transition-group(site-header), ::view-transition-group(announcement) { animation: none; }
+::view-transition-old(root) { animation: 160ms var(--ease-out) both vt-fade-out; }
+::view-transition-new(root) { animation: 260ms var(--ease-out) both vt-fade-in; }
+@keyframes vt-fade-out { to { opacity: 0; } }
+@keyframes vt-fade-in { from { opacity: 0; transform: translateY(8px); } }
+::view-transition-group(product-media) { animation-duration: 380ms; animation-timing-function: var(--ease-drawer); }
+::view-transition-old(product-media), ::view-transition-new(product-media) { height: 100%; object-fit: contain; }
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
+}
+
+/* ---------- 6. Loader: top progress bar ---------- */
+.progress-bar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000; height: 2px;
+  pointer-events: none; opacity: 0; transition: opacity 200ms ease 150ms;
+  view-transition-name: progress-bar;
+}
+.progress-bar span { display: block; height: 100%; background: var(--accent); transform-origin: left center; transform: scaleX(0); box-shadow: 0 0 8px var(--accent); }
+.progress-bar.is-active { opacity: 1; transition-delay: 150ms; } /* only visible if loading takes >150ms */
+.progress-bar.is-active span { transform: scaleX(0.85); transition: transform 8s cubic-bezier(0.08, 0.82, 0.17, 1); }
+.progress-bar.is-done { opacity: 0; transition: opacity 250ms ease 150ms; }
+.progress-bar.is-done span { transform: scaleX(1); transition: transform 150ms var(--ease-out); }
+
+/* ---------- 7. Skeletons & image loading ---------- */
+.skeleton, .js .media:has(> img[loading="lazy"]:not(.is-loaded))::before {
+  background: linear-gradient(90deg, color-mix(in srgb, var(--ink) 6%, var(--bg)) 0%, color-mix(in srgb, var(--ink) 2%, var(--bg)) 50%, color-mix(in srgb, var(--ink) 6%, var(--bg)) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+@keyframes shimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+.skeleton { border-radius: var(--radius-s); color: transparent !important; }
+.skeleton-line { height: 0.9em; border-radius: 6px; }
+.skeleton-card { display: grid; gap: 10px; }
+.skeleton-card .skeleton-media { aspect-ratio: 1; border-radius: var(--radius-m); }
+.skeleton-row { display: grid; grid-template-columns: 56px 1fr 60px; gap: 14px; align-items: center; padding: 8px; }
+.skeleton-row .skeleton-media { aspect-ratio: 1; border-radius: 10px; }
+
+/* Lazy images fade in when decoded; their frame shimmers until then.
+   Fallback: if JS never marks an image, it appears after 4s anyway. */
+.js .media img[loading="lazy"]:not(.is-loaded) { opacity: 0; animation: img-fallback 0s linear 4s forwards; }
+@keyframes img-fallback { to { opacity: 1; } }
+.js .media img.is-loaded { transition: opacity 300ms ease; }
+.js .media:has(> img[loading="lazy"]:not(.is-loaded))::before { content: ""; position: absolute; inset: 0; z-index: 0; }
+.js .card__media[data-card-scrub] img.is-loaded:not([data-active]) { opacity: 0; }
+.lightbox.no-anim[open] { animation: none; }
+
+/* Collection grid while filters load */
+.grid-skeleton { display: contents; }
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton, .js .media:has(> img[loading="lazy"]:not(.is-loaded))::before { animation: none; }
+  .gallery__track, .lightbox__track, .slider__track { scroll-behavior: auto; }
+  .gallery__zoom img, .lightbox__img img { transition: none; }
+  .lightbox[open] { animation: fade-in 200ms ease; }
+  .card__dots span, .collection-tile__arrow { transition: none; }
+  .progress-bar.is-active span { transition-duration: 0s; }
+}

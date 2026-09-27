@@ -1,0 +1,7 @@
+{
+  "sections": {
+    "main": { "type": "main-cart", "settings": {} },
+    "upsell": { "type": "featured-collection", "settings": { "heading": "Complete your setup", "limit": 4, "columns": 4, "show_view_all": false } }
+  },
+  "order": ["main", "upsell"]
+}

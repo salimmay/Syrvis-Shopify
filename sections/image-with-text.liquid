@@ -1,0 +1,38 @@
+{%- assign s = section.settings -%}
+<section class="section">
+  <div class="page-width">
+    <div class="image-text{% if s.image_right %} image-text--reverse{% endif %}">
+      <div class="media image-text__media reveal">
+        {%- if s.image -%}
+          {{ s.image | image_url: width: 1600 | image_tag: loading: 'lazy', sizes: '(min-width: 800px) 50vw, 100vw', widths: '600, 900, 1200, 1600' }}
+        {%- else -%}
+          {{ 'lifestyle-2' | placeholder_svg_tag: 'placeholder-svg' }}
+        {%- endif -%}
+      </div>
+      <div class="image-text__content reveal" style="--i: 1">
+        {%- if s.eyebrow != blank -%}<p class="eyebrow">{{ s.eyebrow }}</p>{%- endif -%}
+        <h2 class="h1">{{ s.heading }}</h2>
+        {%- if s.text != blank -%}<div class="lead">{{ s.text }}</div>{%- endif -%}
+        {%- if s.button_label != blank -%}
+          <a class="btn btn--dark" href="{{ s.button_link | default: routes.all_products_collection_url }}">{{ s.button_label }}</a>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Image with text",
+  "settings": [
+    { "type": "image_picker", "id": "image", "label": "Image" },
+    { "type": "checkbox", "id": "image_right", "label": "Image on the right", "default": false },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Desk Setup" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "A desk that works as hard as you do." },
+    { "type": "richtext", "id": "text", "label": "Text", "default": "<p>Lamps, stands and cable control that turn any corner into a focused, clutter-free workspace.</p>" },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "Shop Desk Setup" },
+    { "type": "url", "id": "button_link", "label": "Button link" }
+  ],
+  "presets": [{ "name": "Image with text" }]
+}
+{% endschema %}

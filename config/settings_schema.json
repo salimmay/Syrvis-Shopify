@@ -1,0 +1,223 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "SmartKove",
+    "theme_version": "1.0.0",
+    "theme_author": "SmartKove",
+    "theme_documentation_url": "https://github.com/",
+    "theme_support_url": "https://github.com/"
+  },
+  {
+    "name": "Colors",
+    "settings": [
+      {
+        "type": "color",
+        "id": "color_background",
+        "label": "Page background",
+        "default": "#fbfbfd"
+      },
+      {
+        "type": "color",
+        "id": "color_surface",
+        "label": "Card & panel surface",
+        "default": "#ffffff"
+      },
+      {
+        "type": "color",
+        "id": "color_surface_alt",
+        "label": "Muted surface",
+        "default": "#f2f2f5"
+      },
+      {
+        "type": "color",
+        "id": "color_text",
+        "label": "Text",
+        "default": "#1d1d1f"
+      },
+      {
+        "type": "color",
+        "id": "color_muted",
+        "label": "Secondary text",
+        "default": "#6e6e73"
+      },
+      {
+        "type": "color",
+        "id": "color_accent",
+        "label": "Accent",
+        "default": "#2f5bff"
+      },
+      {
+        "type": "color",
+        "id": "color_accent_text",
+        "label": "Text on accent",
+        "default": "#ffffff"
+      },
+      {
+        "type": "color",
+        "id": "color_sale",
+        "label": "Sale price",
+        "default": "#d7263d"
+      }
+    ]
+  },
+  {
+    "name": "Layout",
+    "settings": [
+      {
+        "type": "range",
+        "id": "page_width",
+        "label": "Page width",
+        "min": 1000,
+        "max": 1600,
+        "step": 20,
+        "unit": "px",
+        "default": 1200
+      },
+      {
+        "type": "range",
+        "id": "corner_radius",
+        "label": "Corner roundness",
+        "min": 0,
+        "max": 150,
+        "step": 10,
+        "unit": "%",
+        "default": 100
+      },
+      {
+        "type": "image_picker",
+        "id": "favicon",
+        "label": "Favicon",
+        "info": "32 × 32px .png recommended"
+      }
+    ]
+  },
+  {
+    "name": "Motion",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "page_transitions",
+        "label": "Animated page transitions",
+        "info": "Product photos morph from the card into the product page. Chrome, Edge and Safari; other browsers load pages normally.",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "prefetch_links",
+        "label": "Preload pages on hover",
+        "info": "Makes clicks on products and collections feel instant in Chromium browsers.",
+        "default": true
+      }
+    ]
+  },
+  {
+    "name": "Products",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "card_quick_view",
+        "label": "Enable quick view",
+        "info": "Adds a Quick view button to product cards that opens the product's details in a modal.",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "card_show_second_image",
+        "label": "Flip through photos on hover",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "card_show_vendor",
+        "label": "Show vendor",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "card_show_rating",
+        "label": "Show rating",
+        "info": "Reads the reviews.rating metafield that review apps provide.",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "card_quick_add",
+        "label": "Enable quick add",
+        "default": true
+      }
+    ]
+  },
+  {
+    "name": "Cart",
+    "settings": [
+      {
+        "type": "select",
+        "id": "cart_type",
+        "label": "After adding to cart",
+        "options": [
+          {
+            "value": "drawer",
+            "label": "Open cart drawer"
+          },
+          {
+            "value": "page",
+            "label": "Go to cart page"
+          },
+          {
+            "value": "none",
+            "label": "Stay on page"
+          }
+        ],
+        "default": "drawer"
+      },
+      {
+        "type": "number",
+        "id": "free_shipping_threshold",
+        "label": "Free shipping threshold",
+        "info": "In your store's currency. Set to 0 to hide the progress bar.",
+        "default": 49
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_show_note",
+        "label": "Enable order notes",
+        "default": false
+      }
+    ]
+  },
+  {
+    "name": "Social media",
+    "settings": [
+      {
+        "type": "text",
+        "id": "social_instagram",
+        "label": "Instagram",
+        "placeholder": "https://instagram.com/smartkove"
+      },
+      {
+        "type": "text",
+        "id": "social_tiktok",
+        "label": "TikTok",
+        "placeholder": "https://tiktok.com/@smartkove"
+      },
+      {
+        "type": "text",
+        "id": "social_pinterest",
+        "label": "Pinterest",
+        "placeholder": "https://pinterest.com/smartkove"
+      },
+      {
+        "type": "text",
+        "id": "social_youtube",
+        "label": "YouTube",
+        "placeholder": "https://youtube.com/@smartkove"
+      },
+      {
+        "type": "text",
+        "id": "social_facebook",
+        "label": "Facebook",
+        "placeholder": "https://facebook.com/smartkove"
+      }
+    ]
+  }
+]

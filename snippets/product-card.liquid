@@ -1,0 +1,104 @@
+{%- comment -%}
+  Product card.
+  - product: product object (blank renders an onboarding placeholder)
+  - index: position, used for reveal stagger (optional)
+  - reveal: boolean (optional) — only on homepage marketing rows
+  - sizes: image sizes attribute (optional)
+{%- endcomment -%}
+{%- liquid
+  assign sizes = sizes | default: '(min-width: 990px) 25vw, (min-width: 750px) 33vw, 50vw'
+  assign i = index | default: 0
+-%}
+<div class="card{% if reveal %} reveal{% endif %}" style="--i: {{ i | modulo: 4 }}">
+  {%- if product != blank -%}
+    {%- liquid
+      assign first = product.featured_media
+      assign variant = product.selected_or_first_available_variant
+    -%}
+    <div class="card__badges">
+      {%- if product.available == false -%}
+        <span class="badge badge--muted">{{ 'products.card.sold_out' | t }}</span>
+      {%- elsif product.compare_at_price > product.price -%}
+        {%- assign saving = product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price | floor -%}
+        <span class="badge badge--sale">−{{ saving }}%</span>
+      {%- elsif product.tags contains 'new' -%}
+        <span class="badge">{{ 'products.card.new' | t }}</span>
+      {%- elsif product.tags contains 'bestseller' -%}
+        <span class="badge badge--dark">{{ 'products.card.best_seller' | t }}</span>
+      {%- endif -%}
+    </div>
+
+    {%- liquid
+      assign extra_images = 0
+      if settings.card_show_second_image
+        for m in product.media offset: 1 limit: 3
+          if m.media_type == 'image'
+            assign extra_images = extra_images | plus: 1
+          endif
+        endfor
+      endif
+    -%}
+    <div class="media card__media"{% if extra_images > 0 %} data-card-scrub{% endif %} data-product-handle="{{ product.handle }}">
+      {%- if first -%}
+        {%- assign first_alt = first.alt | default: product.title -%}
+        {{ first | image_url: width: 900 | image_tag: loading: 'lazy', sizes: sizes, widths: '300, 450, 600, 900', alt: first_alt, data-active: '' }}
+        {%- if extra_images > 0 -%}
+          {%- for m in product.media offset: 1 limit: 3 -%}
+            {%- if m.media_type == 'image' -%}
+              {{ m | image_url: width: 900 | image_tag: loading: 'lazy', sizes: sizes, widths: '300, 450, 600, 900', alt: '' }}
+            {%- endif -%}
+          {%- endfor -%}
+          <span class="card__dots" aria-hidden="true">
+            {%- for i in (0..extra_images) -%}<span{% if forloop.first %} class="is-active"{% endif %}></span>{%- endfor -%}
+          </span>
+        {%- endif -%}
+      {%- else -%}
+        {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+      {%- endif -%}
+    </div>
+
+    <div class="card__body">
+      {%- if settings.card_show_vendor -%}
+        <span class="card__vendor">{{ product.vendor }}</span>
+      {%- endif -%}
+      <h3 class="card__title"><a href="{{ product.url }}">{{ product.title }}</a></h3>
+      {%- if settings.card_show_rating and product.metafields.reviews.rating.value != blank -%}
+        {%- assign rating = product.metafields.reviews.rating.value -%}
+        <span class="card__rating">
+          <span class="stars" aria-hidden="true">★</span>
+          {{ rating.rating | round: 1 }}
+          {%- if product.metafields.reviews.rating_count %} ({{ product.metafields.reviews.rating_count }}){% endif -%}
+          <span class="visually-hidden">{{ 'products.card.rating' | t: rating: rating.rating, max: rating.scale_max }}</span>
+        </span>
+      {%- endif -%}
+      {% render 'price', product: product %}
+    </div>
+
+    {%- if settings.card_quick_view -%}
+      {%- comment -%} A real link: without JS (or with a modifier key) it simply opens the product page {%- endcomment -%}
+      <a class="card__qv" href="{{ product.url }}" data-quick-view aria-label="{{ 'products.quick_view.open' | t: title: product.title | escape }}">
+        {% render 'icon', name: 'eye' %}<span class="card__qv-label">{{ 'products.quick_view.label' | t }}</span>
+      </a>
+    {%- endif -%}
+
+    {%- if settings.card_quick_add and product.available and product.has_only_default_variant -%}
+      <div class="card__quick">
+        {%- form 'product', product, data-quick-add: '' -%}
+          <input type="hidden" name="id" value="{{ variant.id }}">
+          <button type="submit" class="icon-btn" aria-label="{{ 'products.card.quick_add' | t: title: product.title | escape }}">
+            {% render 'icon', name: 'plus' %}
+          </button>
+        {%- endform -%}
+      </div>
+    {%- endif -%}
+  {%- else -%}
+    <div class="media card__media">
+      {%- assign ph = i | modulo: 6 | plus: 1 -%}
+      {{ 'product-' | append: ph | placeholder_svg_tag: 'placeholder-svg' }}
+    </div>
+    <div class="card__body">
+      <h3 class="card__title">{{ 'products.card.placeholder_title' | t }}</h3>
+      <span class="price"><span class="price__current">{{ 4900 | money }}</span></span>
+    </div>
+  {%- endif -%}
+</div>

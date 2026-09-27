@@ -1,0 +1,31 @@
+<div class="page-width page-width--narrow" style="padding-block: clamp(32px, 5vw, 56px)">
+  <a class="link-arrow small" href="{{ routes.account_url }}">‹ {{ 'customer.account.title' | t }}</a>
+  <h1 class="h1" style="margin: 12px 0 24px">{{ 'customer.addresses.title' | t }}</h1>
+  {%- paginate customer.addresses by 10 -%}
+    <div class="stack">
+      {%- for address in customer.addresses -%}
+        <div class="address-card">
+          {%- if address == customer.default_address -%}<span class="badge">{{ 'customer.addresses.default' | t }}</span>{%- endif -%}
+          {{ address | format_address }}
+          <details>
+            <summary class="link-arrow" style="cursor:pointer">{{ 'customer.addresses.edit' | t }}</summary>
+            {% render 'address-form', address: address, form_type: address %}
+          </details>
+          {%- form 'customer_address', address -%}
+            <input type="hidden" name="_method" value="delete">
+            <button type="submit" class="cart-item__remove">{{ 'customer.addresses.delete' | t }}</button>
+          {%- endform -%}
+        </div>
+      {%- endfor -%}
+      <details class="address-card">
+        <summary class="btn btn--primary" style="width:max-content">{{ 'customer.addresses.add' | t }}</summary>
+        {% render 'address-form', address: customer.new_address, form_type: customer.new_address %}
+      </details>
+    </div>
+    {% render 'pagination', paginate: paginate %}
+  {%- endpaginate -%}
+</div>
+
+{% schema %}
+{ "name": "Customer addresses", "settings": [] }
+{% endschema %}

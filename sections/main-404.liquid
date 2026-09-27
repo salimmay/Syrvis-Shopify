@@ -1,0 +1,16 @@
+<div class="page-width empty-state">
+  <p class="display">404</p>
+  <h1 class="h2">{{ 'errors.not_found' | t }}</h1>
+  <p class="lead">{{ 'errors.not_found_hint' | t }}</p>
+  <div class="hero__ctas" style="justify-content:center">
+    <a class="btn btn--primary" href="{{ routes.all_products_collection_url }}">{{ 'cart.continue' | t }}</a>
+    <a class="btn btn--ghost" href="{{ routes.search_url }}" data-search-open>{{ 'search.title' | t }}</a>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "404",
+  "settings": []
+}
+{% endschema %}

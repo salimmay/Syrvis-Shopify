@@ -1,0 +1,22 @@
+{%- liquid
+  assign accent = settings.color_accent
+  assign radius = settings.corner_radius | default: 100
+-%}
+<style>
+  :root {
+    --bg: {{ settings.color_background }};
+    --surface: {{ settings.color_surface }};
+    --surface-2: {{ settings.color_surface_alt }};
+    --ink: {{ settings.color_text }};
+    --muted: {{ settings.color_muted }};
+    --accent: {{ accent }};
+    --accent-hover: color-mix(in srgb, {{ accent }} 88%, #000);
+    --accent-soft: {{ accent | color_modify: 'alpha', 0.1 }};
+    --accent-ink: {{ settings.color_accent_text }};
+    --sale: {{ settings.color_sale }};
+    --radius-s: calc(12px * {{ radius }} / 100);
+    --radius-m: calc(20px * {{ radius }} / 100);
+    --radius-l: calc(28px * {{ radius }} / 100);
+    --page-width: {{ settings.page_width }}px;
+  }
+</style>

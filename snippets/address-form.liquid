@@ -1,0 +1,21 @@
+{%- form 'customer_address', form_type, class: 'form-grid', style: 'margin-top: 16px' -%}
+  {%- if form.errors -%}<div class="form-status form-status--error">{{ form.errors | default_errors }}</div>{%- endif -%}
+  {%- assign fid = form.id -%}
+  <div class="form-grid form-grid--2">
+    <div class="field"><label for="AFirst-{{ fid }}">{{ 'customer.first_name' | t }}</label><input class="input" id="AFirst-{{ fid }}" name="address[first_name]" value="{{ form.first_name }}" autocomplete="given-name"></div>
+    <div class="field"><label for="ALast-{{ fid }}">{{ 'customer.last_name' | t }}</label><input class="input" id="ALast-{{ fid }}" name="address[last_name]" value="{{ form.last_name }}" autocomplete="family-name"></div>
+  </div>
+  <div class="field"><label for="AAddr1-{{ fid }}">{{ 'customer.addresses.address1' | t }}</label><input class="input" id="AAddr1-{{ fid }}" name="address[address1]" value="{{ form.address1 }}" autocomplete="address-line1"></div>
+  <div class="field"><label for="AAddr2-{{ fid }}">{{ 'customer.addresses.address2' | t }}</label><input class="input" id="AAddr2-{{ fid }}" name="address[address2]" value="{{ form.address2 }}" autocomplete="address-line2"></div>
+  <div class="form-grid form-grid--2">
+    <div class="field"><label for="ACity-{{ fid }}">{{ 'customer.addresses.city' | t }}</label><input class="input" id="ACity-{{ fid }}" name="address[city]" value="{{ form.city }}" autocomplete="address-level2"></div>
+    <div class="field"><label for="AZip-{{ fid }}">{{ 'customer.addresses.zip' | t }}</label><input class="input" id="AZip-{{ fid }}" name="address[zip]" value="{{ form.zip }}" autocomplete="postal-code"></div>
+  </div>
+  <div class="form-grid form-grid--2">
+    <div class="field"><label for="ACountry-{{ fid }}">{{ 'customer.addresses.country' | t }}</label><select class="select" id="ACountry-{{ fid }}" name="address[country]" autocomplete="country">{{ all_country_option_tags }}</select></div>
+    <div class="field"><label for="AProvince-{{ fid }}">{{ 'customer.addresses.province' | t }}</label><input class="input" id="AProvince-{{ fid }}" name="address[province]" value="{{ form.province }}" autocomplete="address-level1"></div>
+  </div>
+  <div class="field"><label for="APhone-{{ fid }}">{{ 'customer.addresses.phone' | t }}</label><input class="input" id="APhone-{{ fid }}" type="tel" name="address[phone]" value="{{ form.phone }}" autocomplete="tel"></div>
+  <label class="facet-check">{{ form.set_as_default_checkbox }}{{ 'customer.addresses.set_default' | t }}</label>
+  <div><button type="submit" class="btn btn--primary">{{ 'customer.addresses.save' | t }}</button></div>
+{%- endform -%}

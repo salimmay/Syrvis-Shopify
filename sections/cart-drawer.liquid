@@ -1,0 +1,59 @@
+<div id="CartDrawer" class="drawer" aria-hidden="true" role="dialog" aria-modal="true" aria-label="{{ 'cart.title' | t }}">
+  <div class="drawer__scrim" data-drawer-close></div>
+  <div class="drawer__panel">
+    <div class="drawer__head">
+      <h2 class="drawer__title">{{ 'cart.title' | t }}</h2>
+      <button type="button" class="icon-btn" data-drawer-close aria-label="{{ 'general.close' | t }}">{% render 'icon', name: 'close' %}</button>
+    </div>
+
+    <div data-cart-drawer-content style="display: contents">
+      <div class="drawer__body">
+        {% render 'shipping-meter' %}
+        <p class="form-status form-status--error small" data-cart-error hidden></p>
+        {%- if cart.item_count > 0 -%}
+          <ul class="cart-items" role="list">
+            {%- for item in cart.items -%}
+              {% render 'cart-line', item: item, index: forloop.index, section: section %}
+            {%- endfor -%}
+          </ul>
+        {%- else -%}
+          <div class="cart-empty">
+            <p class="h3">{{ 'cart.empty' | t }}</p>
+            <p class="muted">{{ 'cart.empty_hint' | t }}</p>
+            <a class="btn btn--primary" href="{{ section.settings.empty_link | default: routes.all_products_collection_url }}">{{ 'cart.continue' | t }}</a>
+          </div>
+        {%- endif -%}
+      </div>
+
+      {%- if cart.item_count > 0 -%}
+        <div class="drawer__foot">
+          {%- for discount in cart.cart_level_discount_applications -%}
+            <div class="cart-note" style="display:flex;justify-content:space-between">
+              <span>{{ discount.title }}</span><span>−{{ discount.total_allocated_amount | money }}</span>
+            </div>
+          {%- endfor -%}
+          <div class="cart-totals">
+            <span>{{ 'cart.subtotal' | t }}</span>
+            <span class="price__current">{{ cart.total_price | money_with_currency }}</span>
+          </div>
+          <p class="cart-note">{{ 'cart.taxes_note' | t }}</p>
+          <form action="{{ routes.cart_url }}" method="post">
+            <button type="submit" name="checkout" class="btn btn--primary btn--block btn--lg">
+              {% render 'icon', name: 'lock' %}{{ 'cart.checkout' | t }}
+            </button>
+          </form>
+          <a class="btn btn--ghost btn--block" href="{{ routes.cart_url }}">{{ 'cart.view_cart' | t }}</a>
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Cart drawer",
+  "settings": [
+    { "type": "url", "id": "empty_link", "label": "Empty cart button link" }
+  ]
+}
+{% endschema %}

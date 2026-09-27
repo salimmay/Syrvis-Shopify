@@ -1,0 +1,57 @@
+<section class="section">
+  <div class="page-width">
+    {%- if section.settings.heading != blank -%}
+      <div class="section-head reveal"><h2 class="h2">{{ section.settings.heading }}</h2></div>
+    {%- endif -%}
+    <div class="features" style="--cols: {{ section.blocks.size | at_most: 4 | at_least: 1 }}">
+      {%- for block in section.blocks -%}
+        <div class="feature reveal" style="--i: {{ forloop.index0 }}" {{ block.shopify_attributes }}>
+          <span class="feature__icon">{% render 'icon', name: block.settings.icon %}</span>
+          <h3>{{ block.settings.title }}</h3>
+          <p>{{ block.settings.text }}</p>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Feature grid",
+  "max_blocks": 8,
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Why SmartKove" }
+  ],
+  "blocks": [
+    {
+      "type": "feature",
+      "name": "Feature",
+      "settings": [
+        {
+          "type": "select", "id": "icon", "label": "Icon",
+          "options": [
+            { "value": "truck", "label": "Shipping" }, { "value": "return", "label": "Returns" },
+            { "value": "shield", "label": "Warranty" }, { "value": "bolt", "label": "Fast" },
+            { "value": "chat", "label": "Support" }, { "value": "lock", "label": "Secure" },
+            { "value": "globe", "label": "Global" }, { "value": "home", "label": "Home" }
+          ],
+          "default": "truck"
+        },
+        { "type": "text", "id": "title", "label": "Title", "default": "Free shipping" },
+        { "type": "textarea", "id": "text", "label": "Text", "default": "On US & EU orders over $49, tracked to your door." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Feature grid",
+      "blocks": [
+        { "type": "feature", "settings": { "icon": "truck", "title": "Free shipping", "text": "On US & EU orders over $49, tracked to your door." } },
+        { "type": "feature", "settings": { "icon": "return", "title": "30-day returns", "text": "Changed your mind? Send it back, no questions." } },
+        { "type": "feature", "settings": { "icon": "shield", "title": "1-year warranty", "text": "Every gadget is covered if something goes wrong." } },
+        { "type": "feature", "settings": { "icon": "chat", "title": "Real support", "text": "A real person replies within 24 hours." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

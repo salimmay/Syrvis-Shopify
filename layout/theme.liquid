@@ -1,0 +1,118 @@
+<!doctype html>
+<html class="no-js" lang="{{ request.locale.iso_code }}">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="{{ settings.color_background }}">
+    <link rel="canonical" href="{{ canonical_url }}">
+    <link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
+
+    {%- if settings.favicon != blank -%}
+      <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 64, height: 64 }}">
+    {%- endif -%}
+
+    <title>
+      {{ page_title }}
+      {%- if current_tags %} &ndash; {{ 'general.meta.tags' | t: tags: current_tags.first }}{% endif -%}
+      {%- if current_page != 1 %} &ndash; {{ 'general.meta.page' | t: page: current_page }}{% endif -%}
+      {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
+    </title>
+
+    {% if page_description %}
+      <meta name="description" content="{{ page_description | escape }}">
+    {% endif %}
+
+    {% render 'meta-tags' %}
+
+    <script>document.documentElement.className = document.documentElement.className.replace('no-js', 'js');</script>
+
+    {{ 'base.css' | asset_url | stylesheet_tag }}
+    {{ 'motion.css' | asset_url | stylesheet_tag }}
+    {%- if settings.card_quick_view -%}{{ 'quick-view.css' | asset_url | stylesheet_tag }}{%- endif -%}
+    {% render 'theme-styles' %}
+    {%- if request.design_mode or settings.page_transitions == false -%}
+      <style>@view-transition { navigation: none; }</style>
+    {%- endif -%}
+
+    {%- comment -%}
+      Page transitions, incoming side. Must be an inline, parser-blocking
+      script in <head> so it runs before the new page's first render.
+      Gives the product photo the same name it had on the old page, so the
+      browser morphs it into place (card → product page and back).
+    {%- endcomment -%}
+    <script>
+      window.addEventListener('pagereveal', function (e) {
+        if (!e.viewTransition || !window.navigation || !navigation.activation || !navigation.activation.from) return;
+        var from = new URL(navigation.activation.from.url);
+        var fromHandle = (from.pathname.match(/\/products\/([^/?#]+)/) || [])[1];
+        var isProduct = /\/products\//.test(location.pathname);
+        var el = null;
+        if (isProduct) {
+          el = document.querySelector('img[data-vt-product]');
+        } else if (fromHandle) {
+          var list = document.querySelectorAll('[data-product-handle="' + fromHandle.replace(/"/g, '') + '"] img');
+          for (var i = 0; i < list.length; i++) {
+            var r = list[i].getBoundingClientRect();
+            if (r.bottom > 0 && r.top < window.innerHeight && r.width > 0) { el = list[i]; break; }
+          }
+        }
+        if (!el) return;
+        el.style.viewTransitionName = 'product-media';
+        e.viewTransition.finished.finally(function () { el.style.viewTransitionName = ''; });
+      });
+    </script>
+
+    <script>
+      window.SK = {
+        routes: {
+          cart_add_url: {{ routes.cart_add_url | json }},
+          cart_change_url: {{ routes.cart_change_url | json }},
+          cart_url: {{ routes.cart_url | json }},
+          predictive_search_url: {{ routes.predictive_search_url | json }}
+        },
+        settings: { cartType: {{ settings.cart_type | json }} }
+      };
+    </script>
+    <script src="{{ 'theme.js' | asset_url }}" defer="defer"></script>
+    <script src="{{ 'motion.js' | asset_url }}" defer="defer"></script>
+
+    {%- if settings.prefetch_links -%}
+      {%- comment -%}
+        Speculation Rules: when a shopper hovers or presses on a product or
+        collection link, the browser fetches that page in advance, so the
+        click (and its transition) feels instant. Chromium browsers only;
+        others ignore it. Prefetch, not prerender, so analytics stay honest.
+      {%- endcomment -%}
+      <script type="speculationrules">
+        {
+          "prefetch": [{
+            "where": { "and": [
+              { "or": [ { "href_matches": "/products/*" }, { "href_matches": "/collections/*" } ] },
+              { "not": { "href_matches": "/cart*" } }
+            ] },
+            "eagerness": "moderate"
+          }]
+        }
+      </script>
+    {%- endif -%}
+
+    {{ content_for_header }}
+  </head>
+
+  <body class="template-{{ template.name | handle }}">
+    <a class="skip-link" href="#MainContent">{{ 'accessibility.skip_to_content' | t }}</a>
+
+    {% sections 'header-group' %}
+
+    <main id="MainContent" role="main" tabindex="-1">
+      {{ content_for_layout }}
+    </main>
+
+    {% sections 'footer-group' %}
+
+    {% render 'search-modal' %}
+    {%- if settings.card_quick_view -%}{% render 'quick-view-modal' %}{%- endif -%}
+    {% section 'cart-drawer' %}
+  </body>
+</html>

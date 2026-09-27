@@ -1,0 +1,33 @@
+<div class="page-width" style="padding-block: clamp(32px, 5vw, 56px)">
+  <div class="section-head">
+    <div class="stack" style="--stack: 6px"><h1 class="h1">{{ 'customer.account.title' | t }}</h1><p class="muted">{{ customer.name }} · {{ customer.email }}</p></div>
+    <a class="btn btn--secondary" href="{{ routes.account_logout_url }}">{{ 'customer.account.logout' | t }}</a>
+  </div>
+  <h2 class="h3" style="margin-bottom: 12px">{{ 'customer.account.orders' | t }}</h2>
+  {%- paginate customer.orders by 20 -%}
+    {%- if customer.orders.size > 0 -%}
+      <div class="table-wrap">
+        <table class="table">
+          <thead><tr><th scope="col">{{ 'customer.order.number' | t }}</th><th scope="col">{{ 'customer.order.date' | t }}</th><th scope="col">{{ 'customer.order.payment' | t }}</th><th scope="col">{{ 'customer.order.fulfillment' | t }}</th><th scope="col">{{ 'customer.order.total' | t }}</th></tr></thead>
+          <tbody>
+            {%- for order in customer.orders -%}
+              <tr><td><a class="link-arrow" href="{{ order.customer_url }}">{{ order.name }}</a></td><td>{{ order.created_at | time_tag: format: 'date' }}</td><td>{{ order.financial_status_label }}</td><td>{{ order.fulfillment_status_label }}</td><td>{{ order.total_net_amount | money_with_currency }}</td></tr>
+            {%- endfor -%}
+          </tbody>
+        </table>
+      </div>
+    {%- else -%}
+      <p class="muted">{{ 'customer.account.no_orders' | t }}</p>
+    {%- endif -%}
+    {% render 'pagination', paginate: paginate %}
+  {%- endpaginate -%}
+  <div style="margin-top: 40px" class="stack" >
+    <h2 class="h3">{{ 'customer.account.address' | t }}</h2>
+    {%- if customer.default_address -%}<div class="address-card">{{ customer.default_address | format_address }}</div>{%- endif -%}
+    <a class="link-arrow" href="{{ routes.account_addresses_url }}">{{ 'customer.account.manage_addresses' | t: count: customer.addresses_count }} ›</a>
+  </div>
+</div>
+
+{% schema %}
+{ "name": "Customer account", "settings": [] }
+{% endschema %}

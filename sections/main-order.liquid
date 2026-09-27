@@ -1,0 +1,33 @@
+<div class="page-width" style="padding-block: clamp(32px, 5vw, 56px)">
+  <a class="link-arrow small" href="{{ routes.account_url }}">‹ {{ 'customer.account.title' | t }}</a>
+  <h1 class="h1" style="margin: 12px 0 4px">{{ 'customer.order.title' | t: name: order.name }}</h1>
+  <p class="muted">{{ order.created_at | time_tag: format: 'date_at_time' }}{% if order.cancelled %} · {{ 'customer.order.cancelled' | t }}{% endif %}</p>
+  <div class="table-wrap" style="margin-top: 24px">
+    <table class="table">
+      <thead><tr><th scope="col">{{ 'customer.order.product' | t }}</th><th scope="col">{{ 'customer.order.quantity' | t }}</th><th scope="col">{{ 'customer.order.total' | t }}</th></tr></thead>
+      <tbody>
+        {%- for item in order.line_items -%}
+          <tr>
+            <td><a href="{{ item.product.url }}">{{ item.title }}</a>{% if item.fulfillment %}<br><span class="small muted">{{ item.fulfillment.created_at | time_tag: format: 'date' }}{% if item.fulfillment.tracking_url %} · <a class="link-arrow" href="{{ item.fulfillment.tracking_url }}">{{ 'customer.order.track' | t }}</a>{% endif %}</span>{% endif %}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.final_line_price | money }}</td>
+          </tr>
+        {%- endfor -%}
+      </tbody>
+      <tfoot>
+        <tr><th scope="row" colspan="2">{{ 'customer.order.subtotal' | t }}</th><td>{{ order.line_items_subtotal_price | money }}</td></tr>
+        {%- for line in order.shipping_methods -%}<tr><th scope="row" colspan="2">{{ line.title }}</th><td>{{ line.price | money }}</td></tr>{%- endfor -%}
+        {%- for tax in order.tax_lines -%}<tr><th scope="row" colspan="2">{{ tax.title }}</th><td>{{ tax.price | money }}</td></tr>{%- endfor -%}
+        <tr><th scope="row" colspan="2">{{ 'customer.order.total' | t }}</th><td><strong>{{ order.total_net_amount | money_with_currency }}</strong></td></tr>
+      </tfoot>
+    </table>
+  </div>
+  <div class="form-grid form-grid--2" style="margin-top: 32px">
+    {%- if order.billing_address -%}<div class="address-card"><h2 class="h3">{{ 'customer.order.billing' | t }}</h2>{{ order.billing_address | format_address }}</div>{%- endif -%}
+    {%- if order.shipping_address -%}<div class="address-card"><h2 class="h3">{{ 'customer.order.shipping' | t }}</h2>{{ order.shipping_address | format_address }}</div>{%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{ "name": "Customer order", "settings": [] }
+{% endschema %}

@@ -1,0 +1,28 @@
+{%- comment -%} Variant data for JS — prices pre-formatted by Shopify. Param: product {%- endcomment -%}
+<script type="application/json" data-variants-json>
+  [
+    {%- for v in product.variants -%}
+      {%- capture v_price -%}{% render 'price', variant: v, size: 'lg' %}{%- endcapture -%}
+      {%- liquid
+        assign v_stock_class = ''
+        assign v_stock_text = 'products.stock.in_stock' | t
+        if v.available == false
+          assign v_stock_class = 'stock--out'
+          assign v_stock_text = 'products.stock.sold_out' | t
+        elsif v.inventory_management == 'shopify' and v.inventory_quantity > 0 and v.inventory_quantity <= 5
+          assign v_stock_class = 'stock--low'
+          assign v_stock_text = 'products.stock.low' | t: count: v.inventory_quantity
+        endif
+      -%}
+      {
+        "id": {{ v.id }},
+        "options": {{ v.options | json }},
+        "available": {{ v.available | json }},
+        "price_html": {{ v_price | strip | json }},
+        "featured_media_id": {{ v.featured_media.id | json }},
+        "stock_class": {{ v_stock_class | json }},
+        "stock_text": {{ v_stock_text | json }}
+      }{% unless forloop.last %},{% endunless %}
+    {%- endfor -%}
+  ]
+</script>

@@ -1,0 +1,9 @@
+{%- comment -%} Empty shell for the quick-view modal; content is fetched per product. {%- endcomment -%}
+<dialog id="QuickView" class="quick-view" aria-labelledby="QuickViewTitle">
+  <div class="quick-view__scrim" data-qv-close></div>
+  <div class="quick-view__panel" data-qv-panel>
+    <div class="quick-view__grab" data-qv-grab aria-hidden="true"><span></span></div>
+    <button type="button" class="icon-btn quick-view__close" data-qv-close aria-label="{{ 'general.close' | t }}">{% render 'icon', name: 'close' %}</button>
+    <div class="quick-view__body" data-qv-body aria-live="polite"></div>
+  </div>
+</dialog>

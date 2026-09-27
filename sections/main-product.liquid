@@ -1,0 +1,276 @@
+{%- liquid
+  assign current_variant = product.selected_or_first_available_variant
+  assign media_list = product.media
+-%}
+
+<div class="page-width" data-product-root>
+  <div class="product">
+
+    {%- comment -%} Gallery {%- endcomment -%}
+    <div class="product__gallery" data-gallery>
+      {%- if media_list.size > 1 -%}
+        <ul class="gallery__thumbs" role="list" aria-label="{{ 'products.gallery.thumbnails' | t }}">
+          {%- for media in media_list -%}
+            <li>
+              <button type="button" class="gallery__thumb" aria-current="{% if forloop.first %}true{% else %}false{% endif %}" aria-label="{{ 'products.gallery.show' | t: index: forloop.index }}">
+                <div class="media" style="--ratio: 1">
+                  {{ media.preview_image | image_url: width: 160 | image_tag: loading: 'lazy', alt: '' }}
+                </div>
+              </button>
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+      <div class="gallery__main">
+        {%- assign img_i = 0 -%}
+        <ul class="gallery__track" role="list" tabindex="0" aria-label="{{ 'products.gallery.label' | t }}" data-gallery-track>
+          {%- for media in media_list -%}
+            <li class="gallery__slide" data-media-id="{{ media.id }}" data-index="{{ forloop.index0 }}">
+              {%- assign media_alt = media.alt | default: product.title -%}
+              {%- case media.media_type -%}
+                {%- when 'image' -%}
+                  <button type="button" class="media media--contain gallery__zoom" style="--ratio: 1" data-zoom data-open-lightbox="{{ img_i }}" aria-label="{{ 'products.gallery.zoom' | t: index: forloop.index }}">
+                    {%- if forloop.first -%}
+                      {{ media | image_url: width: 1600 | image_tag: sizes: '(min-width: 900px) 55vw, 100vw', widths: '400, 600, 800, 1000, 1200, 1600', preload: true, fetchpriority: 'high', alt: media_alt, data-vt-product: '' }}
+                    {%- else -%}
+                      {{ media | image_url: width: 1600 | image_tag: loading: 'lazy', sizes: '(min-width: 900px) 55vw, 100vw', widths: '400, 600, 800, 1000, 1200, 1600', alt: media_alt }}
+                    {%- endif -%}
+                  </button>
+                  {%- assign img_i = img_i | plus: 1 -%}
+                {%- else -%}
+                  <div class="media media--contain" style="--ratio: 1">
+                    {%- case media.media_type -%}
+                      {%- when 'video' -%}
+                        {{ media | video_tag: controls: true, playsinline: true, muted: true, preload: 'metadata' }}
+                      {%- when 'external_video' -%}
+                        {{ media | external_video_tag }}
+                      {%- when 'model' -%}
+                        {{ media | model_viewer_tag: reveal: 'interaction', toggleable: true }}
+                      {%- else -%}
+                        {{ media | media_tag }}
+                    {%- endcase -%}
+                  </div>
+              {%- endcase -%}
+            </li>
+          {%- else -%}
+            <li class="gallery__slide"><div class="media" style="--ratio: 1">{{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}</div></li>
+          {%- endfor -%}
+        </ul>
+        {%- if media_list.size > 1 -%}
+          <button type="button" class="gallery__arrow gallery__arrow--prev" data-gallery-prev aria-label="{{ 'products.gallery.previous' | t }}">{% render 'icon', name: 'chevron-left' %}</button>
+          <button type="button" class="gallery__arrow gallery__arrow--next" data-gallery-next aria-label="{{ 'products.gallery.next' | t }}">{% render 'icon', name: 'chevron-right' %}</button>
+          <span class="gallery__counter" aria-hidden="true"><span data-gallery-current>1</span> / {{ media_list.size }}</span>
+        {%- endif -%}
+      </div>
+      {%- if media_list.size > 1 -%}
+        <div class="gallery__dots" aria-hidden="true">
+          {%- for media in media_list -%}<span{% if forloop.first %} class="is-active"{% endif %}></span>{%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} Fullscreen lightbox {%- endcomment -%}
+    <dialog class="lightbox" data-lightbox aria-label="{{ 'products.gallery.label' | t }}">
+      <div class="lightbox__track" data-lightbox-track>
+        {%- for media in media_list -%}
+          {%- if media.media_type == 'image' -%}
+            <figure class="lightbox__slide">
+              <div class="lightbox__img" data-lightbox-zoom>
+                {{ media | image_url: width: 2400 | image_tag: loading: 'lazy', sizes: '100vw', widths: '800, 1200, 1600, 2000, 2400' }}
+              </div>
+            </figure>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+      <div class="lightbox__bar">
+        <span class="lightbox__count" data-lightbox-count></span>
+        <button type="button" class="icon-btn lightbox__close" data-lightbox-close aria-label="{{ 'general.close' | t }}">{% render 'icon', name: 'close' %}</button>
+      </div>
+      <button type="button" class="gallery__arrow gallery__arrow--prev" data-lightbox-prev aria-label="{{ 'products.gallery.previous' | t }}">{% render 'icon', name: 'chevron-left' %}</button>
+      <button type="button" class="gallery__arrow gallery__arrow--next" data-lightbox-next aria-label="{{ 'products.gallery.next' | t }}">{% render 'icon', name: 'chevron-right' %}</button>
+      <p class="lightbox__hint">{{ 'products.gallery.zoom_hint' | t }}</p>
+    </dialog>
+
+    {%- comment -%} Info column {%- endcomment -%}
+    <div class="product__info">
+      {%- for block in section.blocks -%}
+        {%- case block.type -%}
+
+          {%- when '@app' -%}
+            {% render block %}
+
+          {%- when 'vendor' -%}
+            <p class="eyebrow" {{ block.shopify_attributes }}>{{ product.vendor }}</p>
+
+          {%- when 'title' -%}
+            <h1 class="product__title" {{ block.shopify_attributes }}>{{ product.title }}</h1>
+
+          {%- when 'rating' -%}
+            {%- if product.metafields.reviews.rating.value != blank -%}
+              {%- assign r = product.metafields.reviews.rating.value -%}
+              <a class="product__rating" href="#reviews" {{ block.shopify_attributes }}>
+                <span class="stars" aria-hidden="true">
+                  {%- assign full = r.rating | round -%}
+                  {%- for i in (1..5) -%}{% if i <= full %}★{% else %}☆{% endif %}{%- endfor -%}
+                </span>
+                <span>{{ r.rating | round: 1 }} · {{ 'products.rating_count' | t: count: product.metafields.reviews.rating_count }}</span>
+              </a>
+            {%- endif -%}
+
+          {%- when 'price' -%}
+            <div {{ block.shopify_attributes }}>
+              <div data-price>{% render 'price', variant: current_variant, size: 'lg' %}</div>
+              {%- if cart.taxes_included or shop.shipping_policy.body != blank -%}
+                <p class="small muted" style="margin-top: 4px">
+                  {%- if cart.taxes_included -%}{{ 'products.tax_included' | t }}{%- endif -%}
+                  {%- if shop.shipping_policy.body != blank %} {{ 'products.shipping_policy_html' | t: link: shop.shipping_policy.url }}{%- endif -%}
+                </p>
+              {%- endif -%}
+            </div>
+
+          {%- when 'stock' -%}
+            <div {{ block.shopify_attributes }}>
+              {%- liquid
+                assign stock_class = ''
+                assign stock_text = 'products.stock.in_stock' | t
+                if current_variant.available == false
+                  assign stock_class = 'stock--out'
+                  assign stock_text = 'products.stock.sold_out' | t
+                elsif current_variant.inventory_management == 'shopify' and current_variant.inventory_quantity > 0 and current_variant.inventory_quantity <= block.settings.low_threshold
+                  assign stock_class = 'stock--low'
+                  assign stock_text = 'products.stock.low' | t: count: current_variant.inventory_quantity
+                endif
+              -%}
+              <span class="stock {{ stock_class }}" data-stock>{{ stock_text }}</span>
+            </div>
+
+          {%- when 'variant_picker' -%}
+            <div {{ block.shopify_attributes }}>
+              {%- assign picker_prefix = 'Opt-' | append: section.id -%}
+              {% render 'variant-picker', product: product, id_prefix: picker_prefix %}
+            </div>
+
+          {%- when 'buy_buttons' -%}
+            <div {{ block.shopify_attributes }}>
+              {% render 'buy-form', product: product, variant: current_variant, id_prefix: section.id, show_quantity: block.settings.show_quantity, show_dynamic_checkout: block.settings.show_dynamic_checkout %}
+            </div>
+
+          {%- when 'perks' -%}
+            <ul class="product__perks" role="list" {{ block.shopify_attributes }}>
+              {%- if block.settings.perk_1 != blank -%}<li>{% render 'icon', name: 'truck' %}{{ block.settings.perk_1 }}</li>{%- endif -%}
+              {%- if block.settings.perk_2 != blank -%}<li>{% render 'icon', name: 'return' %}{{ block.settings.perk_2 }}</li>{%- endif -%}
+              {%- if block.settings.perk_3 != blank -%}<li>{% render 'icon', name: 'shield' %}{{ block.settings.perk_3 }}</li>{%- endif -%}
+            </ul>
+
+          {%- when 'description' -%}
+            {%- if product.description != blank -%}
+              <div class="rte muted" {{ block.shopify_attributes }}>{{ product.description }}</div>
+            {%- endif -%}
+
+          {%- when 'specs' -%}
+            {%- assign specs_raw = product.metafields.custom.specs.value | default: block.settings.fallback -%}
+            {%- if specs_raw != blank -%}
+              <div class="accordion" {{ block.shopify_attributes }}>
+                <details{% if block.settings.open %} open{% endif %}>
+                  <summary>{{ block.settings.heading }}<span class="plus" aria-hidden="true"></span></summary>
+                  <div class="accordion__content">
+                    <table class="spec-table">
+                      <tbody>
+                        {%- assign lines = specs_raw | newline_to_br | split: '<br />' -%}
+                        {%- for line in lines -%}
+                          {%- assign parts = line | strip | split: ':' -%}
+                          {%- if parts.size > 1 -%}
+                            {%- assign key = parts.first | strip -%}
+                            {%- assign val = line | strip | remove_first: parts.first | remove_first: ':' | strip -%}
+                            <tr><th scope="row">{{ key }}</th><td>{{ val }}</td></tr>
+                          {%- endif -%}
+                        {%- endfor -%}
+                      </tbody>
+                    </table>
+                  </div>
+                </details>
+              </div>
+            {%- endif -%}
+
+          {%- when 'collapsible' -%}
+            {%- if block.settings.content != blank -%}
+              <div class="accordion" {{ block.shopify_attributes }}>
+                <details>
+                  <summary>{{ block.settings.heading }}<span class="plus" aria-hidden="true"></span></summary>
+                  <div class="accordion__content rte">{{ block.settings.content }}</div>
+                </details>
+              </div>
+            {%- endif -%}
+
+        {%- endcase -%}
+      {%- endfor -%}
+    </div>
+  </div>
+
+  {% render 'variants-json', product: product %}
+
+  {%- comment -%} Sticky mobile add-to-cart {%- endcomment -%}
+  <div class="sticky-atc" aria-hidden="true">
+    <span class="sticky-atc__title">{{ product.title }}</span>
+    <button type="button" class="btn btn--primary" data-sticky-atc tabindex="-1" {% unless current_variant.available %}disabled{% endunless %}>
+      {{ 'products.add_to_cart' | t }}
+    </button>
+  </div>
+</div>
+
+{%- comment -%} Structured data for Google Shopping / rich results {%- endcomment -%}
+<script type="application/ld+json">
+  {{ product | structured_data }}
+</script>
+
+{% schema %}
+{
+  "name": "Product information",
+  "tag": "section",
+  "class": "section section--flush-top",
+  "blocks": [
+    { "type": "@app" },
+    { "type": "vendor", "name": "Vendor", "limit": 1 },
+    { "type": "title", "name": "Title", "limit": 1 },
+    { "type": "rating", "name": "Rating", "limit": 1 },
+    { "type": "price", "name": "Price", "limit": 1 },
+    {
+      "type": "stock", "name": "Stock status", "limit": 1,
+      "settings": [ { "type": "range", "id": "low_threshold", "label": "Show 'Only X left' at", "min": 1, "max": 20, "step": 1, "default": 5 } ]
+    },
+    { "type": "variant_picker", "name": "Variant picker", "limit": 1 },
+    {
+      "type": "buy_buttons", "name": "Buy buttons", "limit": 1,
+      "settings": [
+        { "type": "checkbox", "id": "show_quantity", "label": "Show quantity selector", "default": true },
+        { "type": "checkbox", "id": "show_dynamic_checkout", "label": "Show dynamic checkout buttons", "info": "Apple Pay, Google Pay, Shop Pay, PayPal…", "default": true }
+      ]
+    },
+    {
+      "type": "perks", "name": "Perks", "limit": 1,
+      "settings": [
+        { "type": "text", "id": "perk_1", "label": "Shipping perk", "default": "Free shipping to US & EU over $49" },
+        { "type": "text", "id": "perk_2", "label": "Returns perk", "default": "30-day hassle-free returns" },
+        { "type": "text", "id": "perk_3", "label": "Warranty perk", "default": "1-year warranty included" }
+      ]
+    },
+    { "type": "description", "name": "Description", "limit": 1 },
+    {
+      "type": "specs", "name": "Specs table", "limit": 1,
+      "settings": [
+        { "type": "paragraph", "content": "Reads the product metafield custom.specs (multi-line text). Write one spec per line as Key: Value — e.g. Connectivity: Wi-Fi, Bluetooth 5.2" },
+        { "type": "text", "id": "heading", "label": "Heading", "default": "Specifications" },
+        { "type": "textarea", "id": "fallback", "label": "Fallback specs", "info": "Used when the metafield is empty." },
+        { "type": "checkbox", "id": "open", "label": "Open by default", "default": false }
+      ]
+    },
+    {
+      "type": "collapsible", "name": "Collapsible tab",
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Heading", "default": "Shipping & returns" },
+        { "type": "richtext", "id": "content", "label": "Content", "default": "<p>Orders ship within 1–3 business days. Delivery to the US and Europe usually takes 7–12 business days. Returns are accepted within 30 days of delivery.</p>" }
+      ]
+    }
+  ]
+}
+{% endschema %}

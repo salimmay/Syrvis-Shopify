@@ -1,0 +1,48 @@
+<div class="page-width">
+  <header class="collection-hero">
+    <h1 class="h1">{% if search.performed %}{{ 'search.results_for' | t: terms: search.terms }}{% else %}{{ 'search.title' | t }}{% endif %}</h1>
+    <form action="{{ routes.search_url }}" method="get" role="search" style="display:flex;gap:8px;max-width:560px">
+      <label class="visually-hidden" for="SearchPageInput">{{ 'search.label' | t }}</label>
+      <input class="input" id="SearchPageInput" type="search" name="q" value="{{ search.terms | escape }}" placeholder="{{ 'search.placeholder' | t }}">
+      <input type="hidden" name="options[prefix]" value="last">
+      <button class="btn btn--primary" type="submit">{{ 'search.submit' | t }}</button>
+    </form>
+  </header>
+
+  {%- if search.performed -%}
+    {%- paginate search.results by 24 -%}
+      <div style="margin-top: 24px">
+        <p class="results-count" role="status" style="margin-bottom: 16px">{{ 'search.count' | t: count: search.results_count }}</p>
+        {%- if search.results_count > 0 -%}
+          <ul class="product-grid" role="list" style="--cols: 4">
+            {%- for item in search.results -%}
+              <li>
+                {%- if item.object_type == 'product' -%}
+                  {% render 'product-card', product: item, index: forloop.index0 %}
+                {%- else -%}
+                  <a class="card" href="{{ item.url }}">
+                    <div class="media card__media" style="display:grid;place-items:center;padding:24px">
+                      <span class="badge badge--muted">{{ item.object_type | capitalize }}</span>
+                    </div>
+                    <div class="card__body"><h3 class="card__title">{{ item.title }}</h3></div>
+                  </a>
+                {%- endif -%}
+              </li>
+            {%- endfor -%}
+          </ul>
+        {%- else -%}
+          <div class="cart-empty"><p class="h3">{{ 'search.no_results' | t: terms: search.terms }}</p></div>
+        {%- endif -%}
+        {% render 'pagination', paginate: paginate %}
+      </div>
+    {%- endpaginate -%}
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Search results",
+  "class": "section section--flush-top",
+  "settings": []
+}
+{% endschema %}

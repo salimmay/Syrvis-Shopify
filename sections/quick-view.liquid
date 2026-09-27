@@ -1,0 +1,94 @@
+{%- comment -%}
+  Quick view content. Not placed in any template — fetched on demand with the
+  Section Rendering API: /products/<handle>?section_id=quick-view
+{%- endcomment -%}
+{%- liquid
+  assign current_variant = product.selected_or_first_available_variant
+  assign qv_prefix = 'QV-' | append: product.id
+  assign image_count = 0
+-%}
+<div class="qv" data-product-root data-qv-content>
+  <div class="qv__media" data-gallery>
+    <div class="gallery__main">
+      <ul class="gallery__track qv__track" role="list" tabindex="0" aria-label="{{ 'products.gallery.label' | t }}" data-product-handle="{{ product.handle }}">
+        {%- for media in product.media -%}
+          {%- if media.media_type == 'image' and image_count < 6 -%}
+            {%- assign image_count = image_count | plus: 1 -%}
+            <li class="gallery__slide" data-media-id="{{ media.id }}">
+              <div class="media media--contain" style="--ratio: 1">
+                {%- if forloop.first -%}
+                  {{ media | image_url: width: 1000 | image_tag: sizes: '(min-width: 750px) 480px, 100vw', widths: '400, 600, 800, 1000', alt: media.alt }}
+                {%- else -%}
+                  {{ media | image_url: width: 1000 | image_tag: loading: 'lazy', sizes: '(min-width: 750px) 480px, 100vw', widths: '400, 600, 800, 1000', alt: media.alt }}
+                {%- endif -%}
+              </div>
+            </li>
+          {%- endif -%}
+        {%- else -%}
+          <li class="gallery__slide"><div class="media" style="--ratio: 1">{{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}</div></li>
+        {%- endfor -%}
+      </ul>
+      {%- if image_count > 1 -%}
+        <button type="button" class="gallery__arrow gallery__arrow--prev" data-gallery-prev aria-label="{{ 'products.gallery.previous' | t }}">{% render 'icon', name: 'chevron-left' %}</button>
+        <button type="button" class="gallery__arrow gallery__arrow--next" data-gallery-next aria-label="{{ 'products.gallery.next' | t }}">{% render 'icon', name: 'chevron-right' %}</button>
+      {%- endif -%}
+    </div>
+    {%- if image_count > 1 -%}
+      <div class="gallery__dots qv__dots" aria-hidden="true">
+        {%- for i in (1..image_count) -%}<span{% if forloop.first %} class="is-active"{% endif %}></span>{%- endfor -%}
+      </div>
+    {%- endif -%}
+  </div>
+
+  <div class="qv__info">
+    {%- if product.vendor != blank and product.vendor != shop.name -%}
+      <p class="eyebrow">{{ product.vendor }}</p>
+    {%- endif -%}
+    <h2 class="qv__title" id="QuickViewTitle">{{ product.title }}</h2>
+
+    {%- if product.metafields.reviews.rating.value != blank -%}
+      {%- assign r = product.metafields.reviews.rating.value -%}
+      {%- assign full = r.rating | round -%}
+      <p class="product__rating">
+        <span class="stars" aria-hidden="true">{%- for i in (1..5) -%}{% if i <= full %}★{% else %}☆{% endif %}{%- endfor -%}</span>
+        <span>{{ r.rating | round: 1 }} · {{ 'products.rating_count' | t: count: product.metafields.reviews.rating_count }}</span>
+      </p>
+    {%- endif -%}
+
+    <div data-price>{% render 'price', variant: current_variant, size: 'lg' %}</div>
+
+    {% render 'variant-picker', product: product, id_prefix: qv_prefix %}
+
+    {%- liquid
+      assign stock_class = ''
+      assign stock_text = 'products.stock.in_stock' | t
+      if current_variant.available == false
+        assign stock_class = 'stock--out'
+        assign stock_text = 'products.stock.sold_out' | t
+      elsif current_variant.inventory_management == 'shopify' and current_variant.inventory_quantity > 0 and current_variant.inventory_quantity <= 5
+        assign stock_class = 'stock--low'
+        assign stock_text = 'products.stock.low' | t: count: current_variant.inventory_quantity
+      endif
+    -%}
+    <span class="stock {{ stock_class }}" data-stock>{{ stock_text }}</span>
+
+    {% render 'buy-form', product: product, variant: current_variant, id_prefix: qv_prefix, show_quantity: true, show_dynamic_checkout: false %}
+
+    {%- if product.description != blank -%}
+      <p class="qv__desc">{{ product.description | strip_html | truncatewords: 38 }}</p>
+    {%- endif -%}
+
+    <a class="btn btn--secondary btn--block qv__full" href="{{ product.url }}">
+      {{ 'products.quick_view.full_details' | t }}{% render 'icon', name: 'chevron-right' %}
+    </a>
+  </div>
+
+  {% render 'variants-json', product: product %}
+</div>
+
+{% schema %}
+{
+  "name": "Quick view",
+  "settings": []
+}
+{% endschema %}

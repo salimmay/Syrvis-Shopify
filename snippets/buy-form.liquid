@@ -1,0 +1,33 @@
+{%- comment -%}
+  Add-to-cart form. Params:
+  - product, variant (current variant), id_prefix
+  - show_quantity (bool), show_dynamic_checkout (bool)
+{%- endcomment -%}
+{%- form 'product', product, data-product-form: '', novalidate: 'novalidate' -%}
+  <input type="hidden" name="id" value="{{ variant.id }}">
+  <div class="stack" style="--stack: 12px">
+    <div class="buy-row">
+      {%- if show_quantity -%}
+        <div class="qty">
+          <button type="button" data-qty-step="-1" aria-label="{{ 'cart.decrease_generic' | t }}">−</button>
+          <label class="visually-hidden" for="Quantity-{{ id_prefix }}">{{ 'cart.quantity' | t }}</label>
+          <input id="Quantity-{{ id_prefix }}" type="number" name="quantity" min="1" value="1" inputmode="numeric">
+          <button type="button" data-qty-step="1" aria-label="{{ 'cart.increase_generic' | t }}">+</button>
+        </div>
+      {%- endif -%}
+      <button type="submit" class="btn btn--primary btn--lg atc" data-atc data-state="idle"
+        data-add-text="{{ 'products.add_to_cart' | t }}"
+        data-sold-out-text="{{ 'products.sold_out' | t }}"
+        data-unavailable-text="{{ 'products.unavailable' | t }}"
+        {% unless variant.available %}disabled{% endunless %}>
+        <span class="atc__label atc__label--idle">{% if variant.available %}{{ 'products.add_to_cart' | t }}{% else %}{{ 'products.sold_out' | t }}{% endif %}</span>
+        <span class="atc__label atc__label--busy" aria-hidden="true"><span class="spinner"></span></span>
+        <span class="atc__label atc__label--done" aria-hidden="true">{% render 'icon', name: 'check' %}{{ 'products.added' | t }}</span>
+      </button>
+    </div>
+    {%- if show_dynamic_checkout -%}
+      {{ form | payment_button }}
+    {%- endif -%}
+    <p class="form-status form-status--error small" data-form-error role="alert" hidden></p>
+  </div>
+{%- endform -%}

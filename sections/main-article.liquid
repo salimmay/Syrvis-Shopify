@@ -1,0 +1,39 @@
+<article class="page-width page-width--narrow">
+  <header style="padding-block: clamp(32px, 5vw, 56px) 24px" class="stack">
+    <p class="small muted">{{ article.published_at | time_tag: format: 'date' }}{% if article.author %} · {{ article.author }}{% endif %}</p>
+    <h1 class="h1">{{ article.title }}</h1>
+  </header>
+  {%- if article.image -%}
+    <div class="media" style="--ratio: 16/9; border-radius: var(--radius-l); margin-bottom: 32px">
+      {{ article.image | image_url: width: 1600 | image_tag: sizes: '(min-width: 760px) 760px, 100vw', widths: '600, 900, 1200, 1600', preload: true }}
+    </div>
+  {%- endif -%}
+  <div class="rte">{{ article.content }}</div>
+
+  {%- if blog.comments_enabled? -%}
+    <section style="margin-top: 56px" class="stack" id="comments">
+      <h2 class="h3">{{ 'blogs.comments' | t: count: article.comments_count }}</h2>
+      {%- for comment in article.comments -%}
+        <div class="address-card"><div class="rte">{{ comment.content }}</div><p class="small muted">{{ comment.author }} · {{ comment.created_at | time_tag: format: 'date' }}</p></div>
+      {%- endfor -%}
+      {%- form 'new_comment', article, class: 'form-grid' -%}
+        {%- if form.posted_successfully? -%}<p class="form-status form-status--success">{{ 'blogs.comment_posted' | t }}</p>{%- endif -%}
+        {%- if form.errors -%}<div class="form-status form-status--error">{{ form.errors | default_errors }}</div>{%- endif -%}
+        <div class="form-grid form-grid--2">
+          <div class="field"><label for="CommentAuthor">{{ 'contact.name' | t }}</label><input class="input" id="CommentAuthor" name="comment[author]" required value="{{ form.author }}"></div>
+          <div class="field"><label for="CommentEmail">{{ 'contact.email' | t }}</label><input class="input" id="CommentEmail" type="email" name="comment[email]" required value="{{ form.email }}"></div>
+        </div>
+        <div class="field"><label for="CommentBody">{{ 'contact.message' | t }}</label><textarea class="textarea" id="CommentBody" name="comment[body]" required>{{ form.body }}</textarea></div>
+        <div><button type="submit" class="btn btn--primary">{{ 'blogs.post_comment' | t }}</button></div>
+      {%- endform -%}
+    </section>
+  {%- endif -%}
+</article>
+
+{% schema %}
+{
+  "name": "Blog post",
+  "class": "section section--flush-top",
+  "settings": []
+}
+{% endschema %}

@@ -1,0 +1,47 @@
+{%- comment -%}
+  Filter form. Params: results (collection or search), id_suffix, open_first
+{%- endcomment -%}
+<form class="facets" data-facets-form="filters" action="{{ request.path }}" method="get">
+  {%- if results.terms -%}
+    <input type="hidden" name="q" value="{{ results.terms | escape }}">
+    <input type="hidden" name="options[prefix]" value="last">
+  {%- endif -%}
+  {%- if results.sort_by -%}
+    <input type="hidden" name="sort_by" value="{{ results.sort_by }}">
+  {%- endif -%}
+  {%- for filter in results.filters -%}
+    {%- assign active_count = filter.active_values.size -%}
+    <details{% if forloop.index <= 3 or active_count > 0 %} open{% endif %}>
+      <summary>
+        {{ filter.label }}{% if active_count > 0 %} <span class="badge">{{ active_count }}</span>{% endif %}
+        {% render 'icon', name: 'chevron-down' %}
+      </summary>
+      {%- case filter.type -%}
+        {%- when 'list', 'boolean' -%}
+          <ul class="facet-list" role="list">
+            {%- for value in filter.values -%}
+              {%- assign fid = 'Filter-' | append: id_suffix | append: '-' | append: filter.param_name | handle | append: '-' | append: forloop.index -%}
+              <li>
+                <label class="facet-check" for="{{ fid }}">
+                  <input type="checkbox" id="{{ fid }}" name="{{ value.param_name }}" value="{{ value.value }}"{% if value.active %} checked{% endif %}{% if value.count == 0 and value.active == false %} disabled{% endif %}>
+                  {%- if value.swatch.color -%}<span class="swatch" style="--swatch: {{ value.swatch.color }}"></span>{%- endif -%}
+                  <span>{{ value.label }}</span>
+                  <span class="count">{{ value.count }}</span>
+                </label>
+              </li>
+            {%- endfor -%}
+          </ul>
+        {%- when 'price_range' -%}
+          {%- assign max_price = filter.range_max | money_without_currency | remove: ',' -%}
+          <div class="facet-price">
+            <label class="visually-hidden" for="PriceMin-{{ id_suffix }}">{{ 'collections.price_from' | t }}</label>
+            <input class="input" type="number" id="PriceMin-{{ id_suffix }}" name="{{ filter.min_value.param_name }}" min="0" max="{{ max_price }}" placeholder="0"{% if filter.min_value.value %} value="{{ filter.min_value.value | money_without_currency | remove: ',' }}"{% endif %}>
+            <span class="muted">–</span>
+            <label class="visually-hidden" for="PriceMax-{{ id_suffix }}">{{ 'collections.price_to' | t }}</label>
+            <input class="input" type="number" id="PriceMax-{{ id_suffix }}" name="{{ filter.max_value.param_name }}" min="0" max="{{ max_price }}" placeholder="{{ max_price }}"{% if filter.max_value.value %} value="{{ filter.max_value.value | money_without_currency | remove: ',' }}"{% endif %}>
+          </div>
+      {%- endcase -%}
+    </details>
+  {%- endfor -%}
+  <noscript><button type="submit" class="btn btn--secondary">{{ 'collections.apply' | t }}</button></noscript>
+</form>

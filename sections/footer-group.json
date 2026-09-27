@@ -1,0 +1,17 @@
+{
+  "type": "footer",
+  "name": "Footer group",
+  "sections": {
+    "footer": {
+      "type": "footer",
+      "blocks": {
+        "shop": { "type": "menu", "settings": { "heading": "Shop", "menu": "main-menu" } },
+        "help": { "type": "menu", "settings": { "heading": "Help", "menu": "footer" } },
+        "contact": { "type": "text", "settings": { "heading": "Contact", "text": "<p>Questions? Email us and a real person replies within 24 hours.</p>" } }
+      },
+      "block_order": ["shop", "help", "contact"],
+      "settings": {}
+    }
+  },
+  "order": ["footer"]
+}

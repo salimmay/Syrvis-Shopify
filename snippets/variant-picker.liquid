@@ -1,0 +1,32 @@
+{%- comment -%}
+  Variant option pills. Params:
+  - product
+  - id_prefix: unique per instance (radio names are page-global, so the
+    product page and a quick-view modal must not share them)
+{%- endcomment -%}
+{%- unless product.has_only_default_variant -%}
+  <div style="display: grid; gap: 20px">
+    {%- for option in product.options_with_values -%}
+      {%- assign opt_index = forloop.index0 -%}
+      <fieldset class="variant-group" data-option-index="{{ opt_index }}">
+        <legend>{{ option.name }}: <span data-selected-value>{{ option.selected_value }}</span></legend>
+        <div class="variant-pills">
+          {%- for value in option.values -%}
+            {%- assign input_id = id_prefix | append: '-' | append: opt_index | append: '-' | append: forloop.index0 -%}
+            <div class="variant-pill">
+              <input type="radio" id="{{ input_id }}" name="{{ id_prefix }}-option-{{ opt_index }}" value="{{ value | escape }}" data-option-input{% if value.selected or option.selected_value == value %} checked{% endif %}>
+              <label for="{{ input_id }}">
+                {%- if value.swatch.color -%}
+                  <span class="swatch" style="--swatch: {{ value.swatch.color }}"></span>
+                {%- elsif value.swatch.image -%}
+                  <span class="swatch" style="background-image: url({{ value.swatch.image | image_url: width: 40 }})"></span>
+                {%- endif -%}
+                {{ value }}
+              </label>
+            </div>
+          {%- endfor -%}
+        </div>
+      </fieldset>
+    {%- endfor -%}
+  </div>
+{%- endunless -%}

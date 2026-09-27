@@ -1,0 +1,28 @@
+<section class="section">
+  <div class="page-width page-width--narrow">
+    <div class="rich-text reveal" style="--align: {{ section.settings.align }}; --justify: {% if section.settings.align == 'left' %}start{% else %}center{% endif %}">
+      {%- for block in section.blocks -%}
+        {%- case block.type -%}
+          {%- when 'heading' -%}<h2 class="h1" {{ block.shopify_attributes }}>{{ block.settings.heading }}</h2>
+          {%- when 'text' -%}<div class="lead" {{ block.shopify_attributes }}>{{ block.settings.text }}</div>
+          {%- when 'button' -%}<a class="btn btn--primary" href="{{ block.settings.link | default: '#' }}" {{ block.shopify_attributes }}>{{ block.settings.label }}</a>
+        {%- endcase -%}
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Rich text",
+  "settings": [
+    { "type": "select", "id": "align", "label": "Alignment", "options": [ { "value": "center", "label": "Center" }, { "value": "left", "label": "Left" } ], "default": "center" }
+  ],
+  "blocks": [
+    { "type": "heading", "name": "Heading", "limit": 2, "settings": [ { "type": "text", "id": "heading", "label": "Heading", "default": "Tested so you don't have to." } ] },
+    { "type": "text", "name": "Text", "settings": [ { "type": "richtext", "id": "text", "label": "Text", "default": "<p>Every product in our store is hand-picked and checked for build quality, compatibility and value before it goes live.</p>" } ] },
+    { "type": "button", "name": "Button", "limit": 2, "settings": [ { "type": "text", "id": "label", "label": "Label", "default": "Our story" }, { "type": "url", "id": "link", "label": "Link" } ] }
+  ],
+  "presets": [ { "name": "Rich text", "blocks": [ { "type": "heading" }, { "type": "text" } ] } ]
+}
+{% endschema %}

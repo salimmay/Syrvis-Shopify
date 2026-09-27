@@ -1,0 +1,20 @@
+<div class="page-width auth">
+  <div class="auth__card">
+    <h1 class="h2">{{ 'customer.register.title' | t }}</h1>
+    {%- form 'create_customer', class: 'form-grid', novalidate: 'novalidate' -%}
+      {%- if form.errors -%}<div class="form-status form-status--error" role="alert">{{ form.errors | default_errors }}</div>{%- endif -%}
+      <div class="form-grid form-grid--2">
+        <div class="field"><label for="RegFirst">{{ 'customer.first_name' | t }}</label><input class="input" id="RegFirst" name="customer[first_name]" autocomplete="given-name"></div>
+        <div class="field"><label for="RegLast">{{ 'customer.last_name' | t }}</label><input class="input" id="RegLast" name="customer[last_name]" autocomplete="family-name"></div>
+      </div>
+      <div class="field"><label for="RegEmail">{{ 'customer.email' | t }}</label><input class="input" id="RegEmail" type="email" name="customer[email]" autocomplete="email" required></div>
+      <div class="field"><label for="RegPassword">{{ 'customer.password' | t }}</label><input class="input" id="RegPassword" type="password" name="customer[password]" autocomplete="new-password" required></div>
+      <button type="submit" class="btn btn--primary btn--block">{{ 'customer.register.submit' | t }}</button>
+      <a class="btn btn--ghost btn--block" href="{{ routes.account_login_url }}">{{ 'customer.login.title' | t }}</a>
+    {%- endform -%}
+  </div>
+</div>
+
+{% schema %}
+{ "name": "Customer register", "settings": [] }
+{% endschema %}

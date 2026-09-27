@@ -1,0 +1,37 @@
+<div class="page-width auth">
+  <div class="auth__card" id="login">
+    <h1 class="h2">{{ 'customer.login.title' | t }}</h1>
+    {%- form 'customer_login', class: 'form-grid', novalidate: 'novalidate' -%}
+      {%- if form.errors -%}<div class="form-status form-status--error" role="alert">{{ form.errors | default_errors }}</div>{%- endif -%}
+      <div class="field"><label for="LoginEmail">{{ 'customer.email' | t }}</label><input class="input" id="LoginEmail" type="email" name="customer[email]" autocomplete="email" required></div>
+      {%- if form.password_needed -%}
+        <div class="field"><label for="LoginPassword">{{ 'customer.password' | t }}</label><input class="input" id="LoginPassword" type="password" name="customer[password]" autocomplete="current-password" required></div>
+        <a class="small link-arrow" href="#recover">{{ 'customer.login.forgot' | t }}</a>
+      {%- endif -%}
+      <button type="submit" class="btn btn--primary btn--block">{{ 'customer.login.submit' | t }}</button>
+      <a class="btn btn--ghost btn--block" href="{{ routes.account_register_url }}">{{ 'customer.register.title' | t }}</a>
+    {%- endform -%}
+  </div>
+
+  <div class="auth__card" id="recover">
+    <h2 class="h3">{{ 'customer.recover.title' | t }}</h2>
+    <p class="small muted">{{ 'customer.recover.hint' | t }}</p>
+    {%- form 'recover_customer_password', class: 'form-grid' -%}
+      {%- if form.posted_successfully? -%}<p class="form-status form-status--success">{{ 'customer.recover.success' | t }}</p>{%- endif -%}
+      {%- if form.errors -%}<div class="form-status form-status--error">{{ form.errors | default_errors }}</div>{%- endif -%}
+      <div class="field"><label for="RecoverEmail">{{ 'customer.email' | t }}</label><input class="input" id="RecoverEmail" type="email" name="email" autocomplete="email" required></div>
+      <button type="submit" class="btn btn--secondary btn--block">{{ 'customer.recover.submit' | t }}</button>
+    {%- endform -%}
+  </div>
+
+  {%- if shop.checkout.guest_login -%}
+    <div class="auth__card">
+      <h2 class="h3">{{ 'customer.login.guest' | t }}</h2>
+      {%- form 'guest_login' -%}<button type="submit" class="btn btn--secondary btn--block">{{ 'customer.login.guest_continue' | t }}</button>{%- endform -%}
+    </div>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{ "name": "Customer login", "settings": [] }
+{% endschema %}
